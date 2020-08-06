@@ -11,14 +11,14 @@
 
 '''
 
-# import numpy as np
-# from math import acos
-# from math import sqrt
-# import Kinematics_with_Quaternions as kinematic
-# import kalman as kf
+import numpy as np
+from math import acos
+from math import sqrt
+import lib.Kinematics_with_Quaternions as kinematic
+import lib.kalman as kf
 # from IMU_subscriber_class_v2 import IMUsubscriber
-# from geometry_msgs.msg import Quaternion
-# from my_human_pkg.msg import test_msg
+from geometry_msgs.msg import Quaternion
+from my_human_pkg.msg import test_msg
 
 import os
 import sys
@@ -40,7 +40,7 @@ def test_data(file_name):
     comb_data=freq_filter(median_data, 155, cutoff_fs)
     plot_subplot(acc_data[0], 'raw data')
     plot_subplot(comb_data, 'filtered data')
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':
