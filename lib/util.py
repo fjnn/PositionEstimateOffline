@@ -68,11 +68,14 @@ def read_data_xlsx(file_path):
 	num_rows, num_cols=imu_df[0].shape
 	print(str(num_rows), ' rows')
 	print(str(num_cols), ' cols')
-	imu_data = [0] * num_of_sheet
+	acc_data = [0] * num_of_sheet
+	quat_data = [0] * num_of_sheet
 	for i in xrange(num_of_sheet):
-		imu_data[i] = np.empty([num_rows, 3])
-		imu_data[i] = imu_df[i][['acc_x','acc_y','acc_z']].to_numpy(dtype='float')
-	return imu_data
+		acc_data[i] = np.empty([num_rows, 3])
+		quat_data[i] = np.empty([num_rows, 4])
+		acc_data[i] = imu_df[i][['acc_x','acc_y','acc_z']].to_numpy(dtype='float')
+		quat_data[i] = imu_df[i][['quat_x', 'quat_y', 'quat_z', 'quat_w']].to_numpy(dtype='float')
+	return acc_data, quat_data
 
 def median_filter(data, f_size):
 	lgth, num_signal=data.shape

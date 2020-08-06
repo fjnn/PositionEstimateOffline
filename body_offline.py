@@ -29,16 +29,16 @@ from lib.util import*
 
 def test_data(file_name):
     cur_dir = os.getcwd()
-    fs = 512
-    cutoff = 10
+    fs = 512.0
+    cutoff = 10.0
     cutoff_fs = cutoff / fs
     print "cutoff_fs:", cutoff_fs
     file_path=os.path.join(cur_dir, 'data', file_name)
-    data=np.array(read_data_xlsx(file_path))
-    print data[0].shape
-    median_data=median_filter(data[0], 155)
-    comb_data=freq_filter(median_data, 155, 0.01953125)
-    plot_subplot(data[0], 'raw data')
+    acc_data, quat_data=np.array(read_data_xlsx(file_path))
+    print acc_data[0].shape
+    median_data=median_filter(acc_data[0], 155)
+    comb_data=freq_filter(median_data, 155, cutoff_fs)
+    plot_subplot(acc_data[0], 'raw data')
     plot_subplot(comb_data, 'filtered data')
     plt.show()
 
