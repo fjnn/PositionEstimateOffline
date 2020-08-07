@@ -254,7 +254,7 @@ def find_angle(a, b):
 
 
 # Functions
-def body_in_global(q_sensor_to_global, q_sensor_to_body):
+def q_gb_update(q_sensor_to_global, q_sensor_to_body):
     '''
     Known orientation of each segment and given sensor orientation in global frame, calculates the body orientation in global frame.
     {GB}q = {GS}q * {BS}q'  (q' is the conjugate quaternion)
@@ -295,17 +295,19 @@ def acc_to_pos(q_sensor, acc_sensor, dt):
     return delta_p
 
 
-def segment_kinematics(p_u_prev, q_u, s_u, q_u_conj):
+def segment_kinematics(p_u_prev, q_u, s_u):
     '''
     Calculates the origin of the next body segment in global frame.
     {G}p_u_next = {G}p_u_prev + {GB}q_u * {B}s_u * {GB}q_u_conj
-    @param p_u_prev: position of the previous joint in global frame
+    @param p_u_prev: np.darray, position of the previous joint in global frame
     @param q_u: orientation of the respective body part from body to global frame
     @param s_u: the length of the respective body part
     @returns: the next body segment's origin position.
 
     '''
-    pass
+    p_u_next = np.empty([1, 3])
+    p_u_next = p_u_prev + q_rotate(q_u, s_u)
+    return p_u_next
 
 
 def join_update():
