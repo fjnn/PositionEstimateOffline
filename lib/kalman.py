@@ -10,13 +10,18 @@ In this file, there is only kalman related things.abs
 import calculate_time
 import numpy as np
 
+DT = 0.01
 
-def calculate_b_u(acc, quat):
-    acc = acc.reshape([6,1])
-    delta_p = np.empty(6)
-    for i in range(6):
-        delta_p[i] = acc[i]
-    pass
+
+def calculate_b_u(acc, quat, index=0):
+    delta_p = np.empty([len(acc), acc[0].shape[0], 3])
+    for i in range(acc[0].shape[0]):
+        # acc[0][i] = acc[0][i].reshape([6,1])
+        delta_p[0][i] = 0.5*acc[0][i]*DT*DT
+        index += 1
+        print "delta_p", delta_p[0][i], index
+
+    return delta_p
 
 
 def kalman_predict(A, X, P, Q, B_u):

@@ -117,7 +117,7 @@ def q_multiply(q, p):
         q_multiplied.z = q.w*p.z + q.z*p.w + q.x*p.y - q.y*p.x
         return q_multiplied
     elif type(q) == np.ndarray:
-        print "type: np.array()"
+        # print "type: np.array()"
         q_multiplied = np.array([0.0, 0.0, 0.0, 1.0])  # 'xyzw'
         q_multiplied[0] = q[3]*p[0] + q[0]*p[3] + q[1]*p[2] - q[2]*p[1]
         q_multiplied[1] = q[3]*p[1] + q[1]*p[3] - q[0]*p[2] + q[2]*p[0]

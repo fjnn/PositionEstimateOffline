@@ -140,14 +140,16 @@ def plot3D(data, title):
 
 def plot_subplot(data, title):
 	num_rows, num_cols=data.shape
-	index=np.arange(num_rows)/0.01
+	print num_rows
+	index=np.arange(0,num_rows/100.0,0.01)
+	print len(index)
 	fig, ax = plt.subplots()
 	fig.suptitle(title)
 	labels=['x','y','z']
 	color_map=['r', 'g', 'b']
 	for i in range(num_cols):
 		ax.plot(index, data[:,i], color_map[i], label=labels[i])
-	ax.set_xlim([0,num_rows/0.01])
+	ax.set_xlim([0,num_rows/100])
 	ax.set_xlabel('Time [sec]')
 	ax.set_title('Time domain: '+title)
 	ax.legend()

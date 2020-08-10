@@ -30,7 +30,7 @@ from lib.util import*
 NUM = 4  # number of IMU
 INDEX = 0
 DT = 0.01
-GRAVITY = np.array([0, -9.81, 0])
+GRAVITY = np.array([0, 0, 9.81])
 
 # GLOBALS
 
@@ -43,15 +43,22 @@ def get_filtered_data(file_name):
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat = np.array(read_data_xlsx(file_path))
+    # print "quat init:", quat[0][0]
+    # print "inverted quat init:", kinematic.q_invert(quat[0][0])
+    # quat[0].shape[0]
+    for i in range(1, quat[0].shape[0]):
+        quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
+        quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
+    #  first filter(acc) or rotate(acc)? => rotate(acc)
+        acc[0][i] = kinematic.q_rotate(quat[0][i],acc[0][i])
+        acc[0][i] = acc[0][i] - GRAVITY
+        acc[1][i] = kinematic.q_rotate(quat[1][i],acc[1][i])
+        acc[1][i] = acc[1][i] - GRAVITY
+        # print "acc_rotated:", acc[0][i], kinematic.v_magnitude(acc[0][i])
+
     # median_data = median_filter(acc[0], 155)
     # comb_data = freq_filter(median_data, 155, cutoff/fs)
-    print "quat init:", quat[0][0]
-    print "inverted quat init:", kinematic.q_invert(quat[0][0])
-    # quat[0].shape[0]
-    for i in range(1, 4):
-        quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration
-        print quat[0][i]
-        # quat[i] = kinematic.q_multiply(q_init_others, quat[i])  # initialization
+
     # plot_subplot(acc_data[0], 'raw data')
     # plot_subplot(comb_data, 'filtered data')
     # plt.show()
@@ -65,9 +72,14 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         raise ValueError('No file name specified')
     acc, quat = get_filtered_data(sys.argv[1])
-    input = kf.calculate_b_u(acc, quat)
-
     print "len input:", len(acc)
+    input = kf.calculate_b_u(acc, quat)
+    delta_p = input[0]
+
+    print "delta_p", delta_p.shape
+    plot_subplot(delta_p, 'raw data')
+    plt.show()
+
 
     # stateMatrix = np.zeros((6, 1), np.float64)  # [p0 (3x1), p1 (3x1)]
     # estimateCovariance = np.eye(stateMatrix.shape[0])
