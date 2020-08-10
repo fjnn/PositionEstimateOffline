@@ -16,6 +16,7 @@ from math import acos
 from math import sqrt
 import lib.Kinematics_with_Quaternions as kinematic
 import lib.kalman as kf
+from lib.kalman import KalmanFilter
 # from IMU_subscriber_class_v2 import IMUsubscriber
 from geometry_msgs.msg import Quaternion
 from my_human_pkg.msg import test_msg
@@ -81,26 +82,28 @@ if __name__ == '__main__':
     print "raw:", acc.shape
     print "filtered:", acc_filtered.shape
 
-    print "error_raw:", input_raw[0][-1]
+    print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[0], 'raw data')
-    print "error_filtered:", input_filtered[0][-1]
+    print "error_filtered:", input_filtered[-1]
     # plot_subplot(input_filtered[0], 'filtered data')
     # plt.show()
 
-
-    # stateMatrix = np.zeros((6, 1), np.float64)  # [p0 (3x1), p1 (3x1)]
-    # estimateCovariance = np.eye(stateMatrix.shape[0])
-    # transitionMatrix = np.eye(stateMatrix.shape[0], np.float32)
-    # processNoiseCov = np.eye(stateMatrix.shape[0], np.float32) * 0.001
-    # measurementStateMatrix = np.zeros((3, 1), np.float64)
-    # observationMatrix = np.array([[1,0,0,-1,0,0],[0,1,0,0,-1,0],[0,0,1,0,0,-1]], np.float32)
-    # measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], np.float32) * 1000
-    # kalman = KalmanFilter(X=stateMatrix,
-    #                       P=estimateCovariance,
-    #                       F=transitionMatrix,
-    #                       Q=processNoiseCov,
-    #                       Z=measurementStateMatrix,
-    #                       H=observationMatrix,
-    #                       R=measurementNoiseCov,
-    #                       M=input)
-    # for i in range(len)
+    stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]
+    estimateCovariance = np.eye(stateMatrix.shape[0])
+    transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
+    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 0.001
+    measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
+    observationMatrix = np.array([[1,0,0,-1,0,0],[0,1,0,0,-1,0],[0,0,1,0,0,-1]], dtype=np.float32)
+    measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 1000
+    kalman = KalmanFilter(X=stateMatrix,
+                          P=estimateCovariance,
+                          F=transitionMatrix,
+                          Q=processNoiseCov,
+                          Z=measurementStateMatrix,
+                          H=observationMatrix,
+                          R=measurementNoiseCov,
+                          M=input)
+    print "input size", input_raw[0].shape
+    current_prediction = np.empty([len(acc[0]), 3])
+    for i in range(len(acc[0])):
+        current_prediction = kalman.predict(M=input_raw[i])
