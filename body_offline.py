@@ -56,8 +56,8 @@ def get_filtered_data(file_name):
         acc[1][i] = acc[1][i] - GRAVITY
         # print "acc_rotated:", acc[0][i], kinematic.v_magnitude(acc[0][i])
 
-    # median_data = median_filter(acc[0], 155)
-    # comb_data = freq_filter(median_data, 155, cutoff/fs)
+    median_data = median_filter(acc[0], 155)
+    comb_data = freq_filter(median_data, 155, cutoff/fs)
 
     # plot_subplot(acc_data[0], 'raw data')
     # plot_subplot(comb_data, 'filtered data')
@@ -65,20 +65,24 @@ def get_filtered_data(file_name):
 
     # print "************", index
     INDEX += 1
-    return acc, quat
+    return acc, quat, comb_data
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         raise ValueError('No file name specified')
-    acc, quat = get_filtered_data(sys.argv[1])
-    print "len input:", len(acc)
-    input = kf.calculate_b_u(acc, quat)
-    delta_p = input[0]
+    acc, quat, acc_filtered = get_filtered_data(sys.argv[1])
+    input_raw = kf.calculate_b_u(acc, quat)
+    input_filtered = kf.calculate_b_u(acc_filtered, quat)
 
-    print "delta_p", delta_p.shape
-    plot_subplot(delta_p, 'raw data')
-    plt.show()
+    print "raw:", input_filtered.shape
+    print "filtered:", input_filtered.shape
+
+    print "error_raw:", input_raw[0][-1]
+    plot_subplot(input_raw[0], 'raw data')
+    print "error_filtered:", input_filtered[0][-1]
+    plot_subplot(input_filtered[0], 'filtered data')
+    # plt.show()
 
 
     # stateMatrix = np.zeros((6, 1), np.float64)  # [p0 (3x1), p1 (3x1)]
