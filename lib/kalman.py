@@ -11,6 +11,14 @@ import calculate_time
 import numpy as np
 
 
+def calculate_b_u(acc, quat):
+    acc = acc.reshape([6,1])
+    delta_p = np.empty(6)
+    for i in range(6):
+        delta_p[i] = acc[i]
+    pass
+
+
 def kalman_predict(A, X, P, Q, B_u):
     """
     Predict the future state
