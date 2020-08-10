@@ -82,10 +82,10 @@ if __name__ == '__main__':
     print "filtered:", acc_filtered.shape
 
     print "error_raw:", input_raw[0][-1]
-    plot_subplot(input_raw[0], 'raw data')
+    # plot_subplot(input_raw[0], 'raw data')
     print "error_filtered:", input_filtered[0][-1]
-    plot_subplot(input_filtered[0], 'filtered data')
-    plt.show()
+    # plot_subplot(input_filtered[0], 'filtered data')
+    # plt.show()
 
 
     # stateMatrix = np.zeros((6, 1), np.float64)  # [p0 (3x1), p1 (3x1)]

@@ -15,10 +15,12 @@ DT = 0.01
 
 def calculate_b_u(acc, quat, index=0):
     delta_p = np.empty([len(acc), acc[0].shape[0], 3])
-    error_p = np.zeros([len(acc), acc[0].shape[0], 3])
+    b_u = np.empty([acc[0].shape[0], 6])
     for i in range(acc[0].shape[0]):
         delta_p[0][i] = 0.5*acc[0][i]*DT*DT
-        # print "delta_p", delta_p[0][i], index
+        delta_p[1][i] = 0.5*acc[1][i]*DT*DT
+        # TODO. is it necessary to add v.dt
+        b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
     return delta_p
 
 

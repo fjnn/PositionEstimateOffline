@@ -150,6 +150,7 @@ def plot_subplot(data, title):
 	ax.set_title('Time domain: '+title)
 	ax.legend()
 
+
 def calibration(signal):
 	inc_eng=np.sum(np.clip(signal, a_min=0, a_max=None))
 	der_eng=-1*np.sum(np.clip(signal, a_max=0, a_min=None))

@@ -4,6 +4,3 @@ from geometry_msgs.msg import Quaternion
 # a = np.array(3*[Quaternion(0, 0, 0, 1)])
 #
 # print a[0]
-
-error_p = np.zeros([2, 5, 3])
-print error_p.shape
