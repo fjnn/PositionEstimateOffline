@@ -59,15 +59,12 @@ def read_data_xlsx(file_path):
 	mode='r'
 	xl = pd.ExcelFile(file_path)
 	num_of_sheet = len(xl.sheet_names)
-	print "sheet:", num_of_sheet
 	imu_df = [0] * num_of_sheet
 	for i in xrange(num_of_sheet):
 		sheet_name = 'IMU' + str(i)
 		imu_df[i] = xl.parse(sheet_name)
 	print type(imu_df[0])
 	num_rows, num_cols=imu_df[0].shape
-	print(str(num_rows), ' rows')
-	print(str(num_cols), ' cols')
 	acc_data = [0] * num_of_sheet
 	quat_data = [0] * num_of_sheet
 	for i in xrange(num_of_sheet):
@@ -81,7 +78,6 @@ def median_filter(data, f_size):
 	lgth, num_signal=data.shape
 	f_data=np.zeros([lgth, num_signal])
 	for i in range(num_signal):
-		print "here", type(data[:,i])
 		f_data[:,i]=signal.medfilt(data[:,i], f_size)
 	return f_data
 

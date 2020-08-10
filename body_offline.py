@@ -43,10 +43,11 @@ def get_filtered_data(file_name):
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat = np.array(read_data_xlsx(file_path))
-    # print "quat init:", quat[0][0]
-    # print "inverted quat init:", kinematic.q_invert(quat[0][0])
-    # quat[0].shape[0]
-    for i in range(1, quat[0].shape[0]):
+    num_of_imu = acc.shape[0]
+    num_of_data = acc[0].shape[0]
+    acc_filtered = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
+    median_data = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
+    for i in range(1, num_of_data):
         quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
         quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
     #  first filter(acc) or rotate(acc)? => rotate(acc)
@@ -55,9 +56,11 @@ def get_filtered_data(file_name):
         acc[1][i] = kinematic.q_rotate(quat[1][i],acc[1][i])
         acc[1][i] = acc[1][i] - GRAVITY
         # print "acc_rotated:", acc[0][i], kinematic.v_magnitude(acc[0][i])
+    median_data[0] = median_filter(acc[0], 155)
+    acc_filtered[0] = freq_filter(median_data[0], 155, cutoff/fs)
 
-    median_data = median_filter(acc[0], 155)
-    comb_data = freq_filter(median_data, 155, cutoff/fs)
+    median_data[1] = median_filter(acc[1], 155)
+    acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
 
     # plot_subplot(acc_data[0], 'raw data')
     # plot_subplot(comb_data, 'filtered data')
@@ -65,7 +68,7 @@ def get_filtered_data(file_name):
 
     # print "************", index
     INDEX += 1
-    return acc, quat, comb_data
+    return acc, quat, acc_filtered
 
 
 if __name__ == '__main__':
@@ -75,14 +78,14 @@ if __name__ == '__main__':
     input_raw = kf.calculate_b_u(acc, quat)
     input_filtered = kf.calculate_b_u(acc_filtered, quat)
 
-    print "raw:", input_filtered.shape
-    print "filtered:", input_filtered.shape
+    print "raw:", acc.shape
+    print "filtered:", acc_filtered.shape
 
     print "error_raw:", input_raw[0][-1]
     plot_subplot(input_raw[0], 'raw data')
     print "error_filtered:", input_filtered[0][-1]
     plot_subplot(input_filtered[0], 'filtered data')
-    # plt.show()
+    plt.show()
 
 
     # stateMatrix = np.zeros((6, 1), np.float64)  # [p0 (3x1), p1 (3x1)]
