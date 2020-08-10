@@ -79,12 +79,9 @@ if __name__ == '__main__':
     input_raw = kf.calculate_b_u(acc, quat)
     input_filtered = kf.calculate_b_u(acc_filtered, quat)
 
-    print "raw:", acc.shape
-    print "filtered:", acc_filtered.shape
-
-    print "error_raw:", input_raw[-1]
+    # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[0], 'raw data')
-    print "error_filtered:", input_filtered[-1]
+    # print "error_filtered:", input_filtered[-1]
     # plot_subplot(input_filtered[0], 'filtered data')
     # plt.show()
 
@@ -104,6 +101,9 @@ if __name__ == '__main__':
                           R=measurementNoiseCov,
                           M=input)
     print "input size", input_raw[0].shape
-    current_prediction = np.empty([len(acc[0]), 3])
+    current_prediction = np.empty([len(acc[0]), 6, 1])
+    measurement = np.zeros([1, 3])*len(acc)
+    print "current_prediction:", current_prediction[0].shape
     for i in range(len(acc[0])):
-        current_prediction = kalman.predict(M=input_raw[i])
+        current_prediction[i] = kalman.predict(M=input_raw[i])
+        kalman.correct(measurement[i])

@@ -28,15 +28,14 @@ class KalmanFilter:
     Simple Kalman filter
     """
 
-    def __init__(self, X, F, Q, Z, H, R, P, B=np.array([1, 1]), M=np.array([0])):
+    def __init__(self, X, F, Q, Z, H, R, P, M=np.array([0])):
         """
         Initialise the filter
         Args:
             X: State estimate
             P: Estimate covariance
             F: State transition model
-            B: Control matrix
-            M: Control vector
+            M: Control matrix
             Q: Process noise covariance
             Z: Measurement of the state X
             H: Observation model
@@ -45,7 +44,6 @@ class KalmanFilter:
         self.X = X
         self.P = P
         self.F = F
-        self.B = B
         self.M = M
         self.Q = Q
         self.Z = Z
@@ -53,45 +51,44 @@ class KalmanFilter:
         self.R = R
         self.index = 0
 
-    def predict(A, X, P, Q, M):
+    def predict(self, M=np.array([0])):
         """
         Predict the future state
         Args:
-            A: Transition matrix
-            X: State estimate
-            P: Estimate covariance
-            Q: Process covariance
-            B_u: Control matrix * Control vector
+            self.X: State estimate
+            self.P: Estimate covariance
+            self.B: Control matrix
             self.M: Control vector
         Returns:
-            updated X
+            updated self.X
         """
+        # print "self.x: {0}, index:{1}".format(self.X, self.index)
+        self.M = M
+        self.index += 1
         # Project the state ahead
-        # print "state:", X
-        X = A.dot(X) + M
-        P = A.dot(P).dot(A.T) + Q
-        return X
+        self.X = self.F.dot(self.X) + self.M.dot(self.M)
+        self.P = self.F.dot(self.P).dot(self.F.T) + self.Q
+        self.index += 1
 
-    @calculate_time.profile
-    def update(X, P, C, R, Z):
+        # print "u:", self.M
+        return self.X
+
+    def correct(self, Z):
         """
         Update the Kalman Filter from a measurement
         Args:
-            X: State estimate
-            P: Estimate covariance
-            C: Observation matrix
-            R: Measurement covariance
+            self.X: State estimate
+            self.P: Estimate covariance
             Z: State measurement
         Returns:
             updated X
         """
-        # calculate_time.print_prof_data()
-        # print "correct X: ", self.X
-        K = P.dot(C.T).dot(np.linalg.inv(C.dot(P).dot(C.T) + R))
-        # print "K: ", K
-        # print "Z: ", Z
-        # print "size X:", self.X.shape
-        X += K.dot((Z - C.dot(X)))
-        P = P - K.dot(C).dot(P)
-        # print "state: ", X
-        return X
+        K = self.P.dot(self.H.T).dot(np.linalg.inv(self.H.dot(self.P).dot(self.H.T) + self.R))
+        print "size X:", self.X.shape
+        print "size K:", K.shape
+        print "size H:", self.H.shape
+        print "size Z: ", Z.shape
+        self.X += K.dot((Z - self.H.dot(self.X)))
+        self.P = self.P - K.dot(self.H).dot(self.P)
+
+        return self.X
