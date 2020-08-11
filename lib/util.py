@@ -72,6 +72,8 @@ def read_data_xlsx(file_path):
 		quat_data[i] = np.empty([num_rows, 4])
 		acc_data[i] = imu_df[i][['acc_x','acc_y','acc_z']].to_numpy(dtype='float')
 		quat_data[i] = imu_df[i][['quat_x', 'quat_y', 'quat_z', 'quat_w']].to_numpy(dtype='float')
+	print "acc:", acc_data[0].shape
+	print "quat:", len(quat_data)
 	return acc_data, quat_data
 
 def median_filter(data, f_size):

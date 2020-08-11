@@ -46,6 +46,8 @@ def get_filtered_data(file_name):
     acc, quat = np.array(read_data_xlsx(file_path))
     num_of_imu = acc.shape[0]
     num_of_data = acc[0].shape[0]
+    print "num_of_imu:", num_of_imu
+    print "num_of_data:", num_of_data
     acc_filtered = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
     median_data = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
     for i in range(1, num_of_data):
@@ -100,7 +102,7 @@ if __name__ == '__main__':
                           Z=measurementStateMatrix,
                           H=observationMatrix,
                           R=measurementNoiseCov,
-                          M=input)
+                          M=input_raw)
     print "input size", input_raw[0].shape
     current_prediction = np.empty([len(acc[0]), 6, 1])
     measurement = np.zeros((len(acc[0]), 3, 1))
@@ -111,4 +113,4 @@ if __name__ == '__main__':
         estimated_position[i] = kalman.X[:3]
     estimated_position = estimated_position.reshape((len(acc[0]), 3))
     plot_subplot(estimated_position, 'state estimate')
-    plt.show()
+    # plt.show()
