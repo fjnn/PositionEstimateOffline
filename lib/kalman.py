@@ -84,11 +84,11 @@ class KalmanFilter:
             updated X
         """
         K = self.P.dot(self.H.T).dot(np.linalg.inv(self.H.dot(self.P).dot(self.H.T) + self.R))
-        print "size X:", self.X.shape
-        print "size K:", K.shape
-        print "size H:", self.H.shape
-        print "size Z: ", Z.shape
-        self.X += K.dot((Z - self.H.dot(self.X)))
+        # print "size X:", self.X.shape
+        # print "size K:", K.shape
+        # print "size H:", self.H.shape
+        # print "size Z: ", Z.shape
+        self.X += K.dot(Z - self.H.dot(self.X))
         self.P = self.P - K.dot(self.H).dot(self.P)
 
         return self.X

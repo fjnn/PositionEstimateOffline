@@ -4,3 +4,7 @@ from geometry_msgs.msg import Quaternion
 # a = np.array(3*[Quaternion(0, 0, 0, 1)])
 #
 # print a[0]
+
+a = np.zeros((5,3,1))
+b = a.reshape((5,3))
+print b

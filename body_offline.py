@@ -64,7 +64,8 @@ def get_filtered_data(file_name):
     acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
 
     # plot_subplot(acc_data[0], 'raw data')
-    # plot_subplot(comb_data, 'filtered data')
+    # plot_subplot(acc_filtered[0], 'filtered data')
+    # print "acc size:", acc_filtered[0].shape
     # plt.show()
 
     # print "************", index
@@ -102,8 +103,12 @@ if __name__ == '__main__':
                           M=input)
     print "input size", input_raw[0].shape
     current_prediction = np.empty([len(acc[0]), 6, 1])
-    measurement = np.zeros([1, 3])*len(acc)
-    print "current_prediction:", current_prediction[0].shape
+    measurement = np.zeros((len(acc[0]), 3, 1))
+    estimated_position = np.zeros((len(acc[0]), 3, 1))
     for i in range(len(acc[0])):
         current_prediction[i] = kalman.predict(M=input_raw[i])
         kalman.correct(measurement[i])
+        estimated_position[i] = kalman.X[:3]
+    estimated_position = estimated_position.reshape((len(acc[0]), 3))
+    plot_subplot(estimated_position, 'state estimate')
+    plt.show()
