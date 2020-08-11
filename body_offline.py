@@ -112,5 +112,5 @@ if __name__ == '__main__':
         kalman.correct(measurement[i])
         estimated_position[i] = kalman.X[:3]
     estimated_position = estimated_position.reshape((len(acc[0]), 3))
-    plot_subplot(estimated_position, 'state estimate')
+    # plot_subplot(estimated_position, 'state estimate')
     # plt.show()
