@@ -135,6 +135,7 @@ def plot3D(data, title):
 	ax.set_title(title)
 
 def plot_subplot(data, title):
+	print "data:", data
 	num_rows, num_cols=data.shape
 	print num_rows
 	index=np.arange(0,num_rows/100.0,0.01)

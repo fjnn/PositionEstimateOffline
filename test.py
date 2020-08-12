@@ -5,6 +5,6 @@ from geometry_msgs.msg import Quaternion
 #
 # print a[0]
 
-a = np.zeros((5,3,1))
-b = a.reshape((5,3))
-print b
+a = np.empty([5,3,2])
+a[0][0] = np.zeros(2)
+print a[0][0]
