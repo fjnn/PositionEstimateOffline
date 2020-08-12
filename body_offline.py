@@ -43,7 +43,7 @@ def get_filtered_data(file_name):
     cutoff = 10.0
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
-    acc, quat = np.array(read_data_xlsx(file_path))
+    acc, quat = read_data_xlsx(file_path)
     num_of_imu = acc.shape[0]
     num_of_data = acc[0].shape[0]
     print "num_of_imu:", num_of_imu
@@ -82,10 +82,10 @@ if __name__ == '__main__':
     input_raw = kf.calculate_b_u(acc, quat)
     input_filtered = kf.calculate_b_u(acc_filtered, quat)
 
-    print "error_raw:", input_raw[:,:3].shape
+    print "error_raw:", input_raw[:,3:].shape
     plot_subplot(input_raw[:,:3], 'raw data')
     print "error_filtered:", input_filtered[-1]
-    plot_subplot(input_filtered[:,:3], 'filtered data')
+    plot_subplot(input_filtered[:,3:], 'filtered data')
     plt.show()
 
     stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]

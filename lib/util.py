@@ -63,10 +63,10 @@ def read_data_xlsx(file_path):
 	for i in xrange(num_of_sheet):
 		sheet_name = 'IMU' + str(i)
 		imu_df[i] = xl.parse(sheet_name)
-	print type(imu_df[0])
 	num_rows, num_cols=imu_df[0].shape
-	acc_data = [0] * num_of_sheet
+	acc_data = np.array(num_of_sheet*[np.empty([num_rows, 3])])
 	quat_data = [0] * num_of_sheet
+	# print "acc0", acc_data[0].shape
 	for i in xrange(num_of_sheet):
 		acc_data[i] = np.empty([num_rows, 3])
 		quat_data[i] = np.empty([num_rows, 4])
@@ -135,7 +135,6 @@ def plot3D(data, title):
 	ax.set_title(title)
 
 def plot_subplot(data, title):
-	print "data:", data
 	num_rows, num_cols=data.shape
 	print num_rows
 	index=np.arange(0,num_rows/100.0,0.01)
