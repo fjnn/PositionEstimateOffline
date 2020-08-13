@@ -134,21 +134,22 @@ def plot3D(data, title):
 	ax.plot(xs=data[:,0], ys=data[:,1], zs=data[:,2], zdir='z')
 	ax.set_title(title)
 
-def plot_subplot(data, title):
+def plot_subplot(data, title, hold=False, dt=0.01, ylim=None):
 	num_rows, num_cols=data.shape
-	print num_rows
-	index=np.arange(0,num_rows/100.0,0.01)
-	print len(index)
+	index=np.arange(0,num_rows/(1/dt),dt)
 	fig, ax = plt.subplots()
 	fig.suptitle(title)
 	labels=['x','y','z']
 	color_map=['r', 'g', 'b']
+	# color_map=['r', 'w', 'w']
 	for i in range(num_cols):
 		ax.plot(index, data[:,i], color_map[i], label=labels[i])
-	ax.set_xlim([0,num_rows/100])
+	ax.set_xlim([0,num_rows/(1/dt)-dt])
+	ax.set_ylim(ylim)
 	ax.set_xlabel('Time [sec]')
 	ax.set_title('Time domain: '+title)
 	ax.legend()
+	plt.hold(hold)
 
 
 def calibration(signal):

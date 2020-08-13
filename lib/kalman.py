@@ -9,22 +9,38 @@ In this file, there is only kalman related things.abs
 
 import calculate_time
 import numpy as np
+from util import*
 
 
 def calculate_b_u(acc, quat, index=0):
     DT = 0.01
     delta_p = np.empty([len(acc), acc[0].shape[0], 3])
-    v_prev = np.empty([len(acc), acc[0].shape[0], 3])
+    vel = np.empty([len(acc), acc[0].shape[0], 3])
     b_u = np.empty([acc[0].shape[0], 6])
     for i in range(len(acc)):
         delta_p[i][0] = np.zeros(3)
-        v_prev[i][0] = np.zeros(3)
+        vel[i][0] = np.zeros(3)
         # TODO: alttakini de multiple IMU icin yap
     for i in range(1, acc[0].shape[0]):
-        delta_p[0][i] = delta_p[0][i-1]+v_prev[0][i-1]*DT+0.5*acc[0][i]*DT*DT
-        delta_p[1][i] = delta_p[1][i-1]+v_prev[1][i-1]*DT+0.5*acc[1][i]*DT*DT
-        # TODO. is it necessary to add v.dt
+        delta_p[0][i] = delta_p[0][i-1]+vel[0][i-1]*DT+0.5*acc[0][i]*DT*DT
+        delta_p[1][i] = delta_p[1][i-1]+vel[1][i-1]*DT+0.5*acc[1][i]*DT*DT
+
+        vel[0][i] = vel[0][i-1]+acc[0][i]*DT
+        vel[1][i] = acc[1][i]*DT
+
         b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
+    # print "acc:", acc[0].shape
+    # print "vel:", vel[0].shape
+    # print "delta_p", delta_p[0].shape
+    print "p:", delta_p[0]
+    print "v:", vel[0]
+    print "a:", acc[0]
+    t = np.arange(0, len(acc[0]))
+    plot_subplot(acc[0], "accelerometer", dt=DT, ylim=[-1, 4], hold=True)
+    plot_subplot(vel[0], "velocity", dt=DT, ylim=[-0.1, 0.15], hold=True)
+    plot_subplot(delta_p[0], "position", dt=DT, ylim=[-0.1, 0.15])
+    plt.show()
+
     return b_u
 
 

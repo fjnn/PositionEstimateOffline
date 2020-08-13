@@ -80,13 +80,13 @@ if __name__ == '__main__':
         raise ValueError('No file name specified')
     acc, quat, acc_filtered = get_filtered_data(sys.argv[1])
     input_raw = kf.calculate_b_u(acc, quat)
-    input_filtered = kf.calculate_b_u(acc_filtered, quat)
+    # input_filtered = kf.calculate_b_u(acc_filtered, quat)
 
     print "error_raw:", input_raw[:,3:].shape
     plot_subplot(input_raw[:,:3], 'raw data')
-    print "error_filtered:", input_filtered[-1]
-    plot_subplot(input_filtered[:,3:], 'filtered data')
-    plt.show()
+    # print "error_filtered:", input_filtered[-1]
+    # plot_subplot(input_filtered[:,3:], 'filtered data')
+    # plt.show()
 
     stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]
     estimateCovariance = np.eye(stateMatrix.shape[0])
