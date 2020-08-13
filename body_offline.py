@@ -50,34 +50,30 @@ def get_filtered_data(file_name):
     print "num_of_data:", num_of_data
     acc_filtered = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
     median_data = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
-    for i in range(1, num_of_data):
-        quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
-        quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
-    #  first filter(acc) or rotate(acc)? => rotate(acc)
-        # acc[0][i] = kinematic.q_rotate(quat[0][i],acc[0][i])
-        # acc[0][i] = acc[0][i] - GRAVITY
-        # acc[1][i] = kinematic.q_rotate(quat[1][i],acc[1][i])
-        # acc[1][i] = acc[1][i] - GRAVITY
-        # print "acc_rotated:", acc[0][i], kinematic.v_magnitude(acc[0][i])
+
     median_data[0] = median_filter(acc[0], 155)
     acc_filtered[0] = freq_filter(median_data[0], 155, cutoff/fs)
 
     median_data[1] = median_filter(acc[1], 155)
     acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
 
-    acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
-    acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-    acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
-    acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
+    for i in range(1, num_of_data):
+        quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
+        quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
+        acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
+        acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
+        acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
+        acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
 
-    plot_subplot(acc[0], 'raw data', hold=True)
-    plot_subplot(acc_filtered[0], 'filtered data')
-    print "acc data:", acc[0][4101]
-    print "acc filtered data:", acc_filtered[0][4101]
-    plt.show()
+
+    # plot_subplot(acc[0], 'raw data', hold=True)
+    # plot_subplot(acc_filtered[0], 'filtered data')
+    # print "acc data:", acc[0][4101]
+    # print "acc filtered data:", acc_filtered[0][4101]
+    # plt.show()
 
     # print "************", index
-    INDEX += 1
+    # INDEX += 1
     return acc, quat, acc_filtered
 
 
@@ -85,17 +81,17 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         raise ValueError('No file name specified')
     acc, quat, acc_filtered = get_filtered_data(sys.argv[1])
-    # plot_subplot(acc[0], 'raw data', hold=True, ylim=[-0.05, 0.03])
-    # plot_subplot(acc_filtered[0], 'filtered data', hold=True)
+    plot_subplot(acc[0], 'raw acc data', hold=True)
+    plot_subplot(acc_filtered[0], 'filtered acc data', hold=True)
     # plt.show()
 
-    input_raw = kf.calculate_b_u(acc, quat)
+    # input_raw = kf.calculate_b_u(acc, quat)
     input_filtered = kf.calculate_b_u(acc_filtered, quat)
 
-    # print "error_raw:", input_raw[:,3:].shape
-    # plot_subplot(input_raw[:,:3], 'raw data')
+    # print "error_raw:", input_raw[-1]
+    # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
     # print "error_filtered:", input_filtered[-1]
-    # plot_subplot(input_filtered[:,3:], 'filtered data')
+    # plot_subplot(input_filtered[:,3:], 'b_u IMU1 part filtered')
     # plt.show()
 
     stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]

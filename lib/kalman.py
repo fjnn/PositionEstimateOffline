@@ -13,7 +13,7 @@ from util import*
 
 
 def calculate_b_u(acc, quat, index=0):
-    DT = 0.01
+    DT = 0.02
     delta_p = np.empty([len(acc), acc[0].shape[0], 3])
     vel = np.empty([len(acc), acc[0].shape[0], 3])
     b_u = np.empty([acc[0].shape[0], 6])
@@ -36,10 +36,10 @@ def calculate_b_u(acc, quat, index=0):
     # print "v:", vel[0]
     # print "a:", acc[0]
     t = np.arange(0, len(acc[0]))
-    # plot_subplot(acc[0], "accelerometer", dt=DT, ylim=[-1, 4], hold=True)
-    # plot_subplot(vel[0], "velocity", dt=DT, ylim=[-0.1, 0.15], hold=True)
-    # plot_subplot(delta_p[0], "position", dt=DT, ylim=[-0.1, 0.15])
-    # plt.show()
+    plot_subplot(acc[0], "accelerometer", dt=DT)
+    plot_subplot(vel[0], "velocity", dt=DT)
+    plot_subplot(delta_p[0], "position", dt=DT)
+    plt.show()
     return b_u
 
 

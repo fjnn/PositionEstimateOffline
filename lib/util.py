@@ -137,7 +137,7 @@ def plot3D(data, title):
 	ax.plot(xs=data[:,0], ys=data[:,1], zs=data[:,2], zdir='z')
 	ax.set_title(title)
 
-def plot_subplot(data, title, hold=False, dt=0.01, ylim=None):
+def plot_subplot(data, title, hold=True, dt=0.01, ylim=None):
 	num_rows, num_cols=data.shape
 	index=np.arange(0,num_rows/(1/dt),dt)
 	fig, ax = plt.subplots()
