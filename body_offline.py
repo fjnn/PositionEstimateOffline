@@ -54,16 +54,21 @@ def get_filtered_data(file_name):
         quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
         quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
     #  first filter(acc) or rotate(acc)? => rotate(acc)
-        acc[0][i] = kinematic.q_rotate(quat[0][i],acc[0][i])
-        acc[0][i] = acc[0][i] - GRAVITY
-        acc[1][i] = kinematic.q_rotate(quat[1][i],acc[1][i])
-        acc[1][i] = acc[1][i] - GRAVITY
+        # acc[0][i] = kinematic.q_rotate(quat[0][i],acc[0][i])
+        # acc[0][i] = acc[0][i] - GRAVITY
+        # acc[1][i] = kinematic.q_rotate(quat[1][i],acc[1][i])
+        # acc[1][i] = acc[1][i] - GRAVITY
         # print "acc_rotated:", acc[0][i], kinematic.v_magnitude(acc[0][i])
     median_data[0] = median_filter(acc[0], 155)
     acc_filtered[0] = freq_filter(median_data[0], 155, cutoff/fs)
 
     median_data[1] = median_filter(acc[1], 155)
     acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
+
+    acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
+    acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
+    acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
+    acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
 
     plot_subplot(acc[0], 'raw data', hold=True)
     plot_subplot(acc_filtered[0], 'filtered data')
