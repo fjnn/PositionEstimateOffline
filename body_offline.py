@@ -63,16 +63,18 @@ def get_filtered_data(file_name):
     for i in range(1, num_of_data):
         quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
         quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
+    print "quat", quat[0][:1000]
     print "sample acc raw:", acc[0][200]
     print "sample acc filtered:", acc_filtered[0][200]
+    plot_subplot(acc[0], 'raw data', hold=True)
+    plot_subplot(acc_filtered[0], 'filtered data')
     for i in range(1, num_of_data):
-        acc_filtered[0][i] = kinematic.q_rotate(quat[0][i-155],acc_filtered[0][i])
+        acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
         acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-        acc_filtered[1][i] = kinematic.q_rotate(quat[1][i-155],acc_filtered[1][i])
+        acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
         acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
     print "sample acc filtered rotated:", acc_filtered[0][200]
 
-    plot_subplot(acc[0], 'raw data', hold=True)
     plot_subplot(acc_filtered[0], 'filtered data')
     plt.show()
 
