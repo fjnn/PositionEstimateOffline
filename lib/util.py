@@ -142,8 +142,8 @@ def plot_subplot(data, title, hold=True, dt=0.01, ylim=None):
 	index=np.arange(0,num_rows/(1/dt),dt)
 	fig, ax = plt.subplots()
 	fig.suptitle(title)
-	labels=['x','y','z']
-	color_map=['r', 'g', 'b']
+	labels=['x','y','z','w']
+	color_map=['r', 'g', 'b', 'y']
 	# color_map=['r', 'w', 'w']
 	for i in range(num_cols):
 		ax.plot(index, data[:,i], color_map[i], label=labels[i])

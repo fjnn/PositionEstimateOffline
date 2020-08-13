@@ -50,12 +50,17 @@ def get_filtered_data(file_name):
     print "num_of_data:", num_of_data
     acc_filtered = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
     median_data = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
+    quat_filtered = np.empty([num_of_imu, quat[0].shape[0], quat[0].shape[1]])
+    median_quat = np.empty([num_of_imu, quat[0].shape[0], quat[0].shape[1]])
 
     median_data[0] = median_filter(acc[0], 155)
     acc_filtered[0] = freq_filter(median_data[0], 155, cutoff/fs)
 
     median_data[1] = median_filter(acc[1], 155)
     acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
+
+    median_quat[0] = median_filter(quat[0], 155)
+    quat_filtered[0] = freq_filter(median_quat[0], 155, cutoff/fs)
 
     for i in range(1, num_of_data):
         quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
@@ -68,23 +73,29 @@ def get_filtered_data(file_name):
     print "sample acc raw:", acc[0][2000]
     print "sample acc filtered:", acc_filtered[0][2000]
 
-    # plot_subplot(acc[0], 'raw data', hold=True)
-    # plot_subplot(acc_filtered[0], 'filtered data')
-    # print "acc data:", acc[0][4101]
-    # print "acc filtered data:", acc_filtered[0][4101]
+    plot_subplot(acc[0], 'raw data', hold=True)
+    plot_subplot(acc_filtered[0], 'filtered data')
+    print "acc data:", acc[0][4101]
+    print "acc filtered data:", acc_filtered[0][4101]
     # plt.show()
+
+    plot_subplot(quat[0], 'raw data', hold=True)
+    plot_subplot(quat_filtered[0], 'filtered data')
+    print "quat data:", quat[0][4101]
+    print "quat filtered data:", quat_filtered[0][4101]
+    plt.show()
 
     # print "************", index
     # INDEX += 1
-    return acc, quat, acc_filtered
+    return acc, quat, acc_filtered, quat_filtered
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         raise ValueError('No file name specified')
     acc, quat, acc_filtered = get_filtered_data(sys.argv[1])
-    plot_subplot(acc[0], 'raw acc data', hold=True)
-    plot_subplot(acc_filtered[0], 'filtered acc data', hold=True)
+    # plot_subplot(acc[0], 'raw acc data', hold=True)
+    # plot_subplot(acc_filtered[0], 'filtered acc data', hold=True)
     # plt.show()
 
     # input_raw = kf.calculate_b_u(acc, quat)
