@@ -65,10 +65,11 @@ def get_filtered_data(file_name):
     median_data[1] = median_filter(acc[1], 155)
     acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
 
-    # plot_subplot(acc_data[0], 'raw data')
-    # plot_subplot(acc_filtered[0], 'filtered data')
-    # print "acc size:", acc_filtered[0].shape
-    # plt.show()
+    plot_subplot(acc[0], 'raw data', hold=True)
+    plot_subplot(acc_filtered[0], 'filtered data')
+    print "acc data:", acc[0][4101]
+    print "acc filtered data:", acc_filtered[0][4101]
+    plt.show()
 
     # print "************", index
     INDEX += 1
@@ -79,10 +80,14 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         raise ValueError('No file name specified')
     acc, quat, acc_filtered = get_filtered_data(sys.argv[1])
+    # plot_subplot(acc[0], 'raw data', hold=True, ylim=[-0.05, 0.03])
+    # plot_subplot(acc_filtered[0], 'filtered data', hold=True)
+    # plt.show()
+
     input_raw = kf.calculate_b_u(acc, quat)
     input_filtered = kf.calculate_b_u(acc_filtered, quat)
 
-    print "error_raw:", input_raw[:,3:].shape
+    # print "error_raw:", input_raw[:,3:].shape
     # plot_subplot(input_raw[:,:3], 'raw data')
     # print "error_filtered:", input_filtered[-1]
     # plot_subplot(input_filtered[:,3:], 'filtered data')
