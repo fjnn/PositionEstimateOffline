@@ -57,13 +57,12 @@ def get_filtered_data(file_name):
     median_data[1] = median_filter(acc[1], 155)
     acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
 
-    GRAVITY = averaged_array = np.average(acc_filtered[0][10:40],axis=0)
+    GRAVITY = averaged_array = np.average(acc_filtered[0][10:310],axis=0)
     print "GRAVITY:", GRAVITY
 
     for i in range(1, num_of_data):
         quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
         quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
-    print "quat", quat[0][:1000]
     print "sample acc raw:", acc[0][200]
     print "sample acc filtered:", acc_filtered[0][200]
     plot_subplot(acc[0], 'raw data', hold=True)
