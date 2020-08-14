@@ -38,7 +38,7 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
         vel[0][i] = vel[0][i-1]+acc[0][i]*DT
         vel[1][i] = acc[1][i]*DT
 
-        b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
+        b_u[i] = np.concatenate(((delta_p[0][i]-delta_p[0][i-1]), (delta_p[1][i]-delta_p[1][i-1])), axis=0)
     # print "acc:", acc[0].shape
     # print "vel:", vel[0].shape
     # print "delta_p", delta_p[0].shape
@@ -50,7 +50,7 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
     # plot_subplot(vel[0], "velocity", dt=DT)
     # plot_subplot(delta_p[0], "position", dt=DT)
     # plt.show()
-    return b_u
+    return delta_p, b_u
 
 
 class KalmanFilter:

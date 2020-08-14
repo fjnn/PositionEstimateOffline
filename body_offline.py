@@ -101,7 +101,7 @@ if __name__ == '__main__':
     # plt.show()
 
     # input_raw = kf.calculate_b_u(acc, quat)
-    input_filtered = kf.calculate_b_u(acc_filtered, quat)
+    delta_p, input_filtered = kf.calculate_b_u(acc_filtered, quat)
 
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
@@ -123,14 +123,16 @@ if __name__ == '__main__':
                           Z=measurementStateMatrix,
                           H=observationMatrix,
                           R=measurementNoiseCov,
-                          M=input_raw)
+                          M=input_filtered)
     current_prediction = np.empty([len(acc[0]), 6, 1])
     measurement = np.zeros((len(acc[0]), 3, 1))
     estimated_position = np.zeros((len(acc[0]), 3, 1))
     for i in range(len(acc[0])):
-        current_prediction[i] = kalman.predict(M=input_raw[i])
+        current_prediction[i] = kalman.predict(M=input_filtered[i])
         kalman.correct(measurement[i])
         estimated_position[i] = kalman.X[:3]
     estimated_position = estimated_position.reshape((len(acc[0]), 3))
-    # plot_subplot(estimated_position, 'state estimate')
-    # plt.show()
+    print "estimated_position", estimated_position
+    plot_subplot(delta_p[0], "delta_p")
+    plot_subplot(estimated_position, 'state estimate')
+    plt.show()
