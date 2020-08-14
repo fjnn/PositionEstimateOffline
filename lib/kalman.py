@@ -21,7 +21,16 @@ def calculate_b_u(acc, quat, index=0):
         delta_p[i][0] = np.zeros(3)
         vel[i][0] = np.zeros(3)
         # TODO: alttakini de multiple IMU icin yap
-    for i in range(1, acc[0].shape[0]):
+    for i in range(1, 26):  # until window_size/2 +1
+    #  This recovers the errors in the calibration step
+        delta_p[0][i] = np.zeros(3)
+        delta_p[1][i] = np.zeros(3)
+
+        vel[0][i] = np.zeros(3)
+        vel[1][i] = np.zeros(3)
+
+        b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
+    for i in range(26, acc[0].shape[0]):  # until window_size/2 +1
         delta_p[0][i] = delta_p[0][i-1]+vel[0][i-1]*DT+0.5*acc[0][i]*DT*DT
         delta_p[1][i] = delta_p[1][i-1]+vel[1][i-1]*DT+0.5*acc[1][i]*DT*DT
 

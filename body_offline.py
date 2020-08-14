@@ -57,8 +57,9 @@ def get_filtered_data(file_name):
     median_data[1] = median_filter(acc[1], 51)
     acc_filtered[1] = freq_filter(median_data[1], 51, cutoff/fs)
 
-    GRAVITY = np.average(acc_filtered[0][40:60],axis=0)
+    GRAVITY = np.average(acc_filtered[0][26:152],axis=0)  # 26=win_size/2 + 1
     print "GRAVITY:", GRAVITY
+
 
     for i in range(1, num_of_data):
         quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
