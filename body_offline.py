@@ -77,6 +77,7 @@ def get_filtered_data(file_name):
         acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
 
     offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
+    print "offset", offset
 
     for i in range(0, num_of_imu):
         for j in range(0, num_of_data):
@@ -123,7 +124,6 @@ if __name__ == '__main__':
                           H=observationMatrix,
                           R=measurementNoiseCov,
                           M=input_raw)
-    print "input size", input_raw[0].shape
     current_prediction = np.empty([len(acc[0]), 6, 1])
     measurement = np.zeros((len(acc[0]), 3, 1))
     estimated_position = np.zeros((len(acc[0]), 3, 1))

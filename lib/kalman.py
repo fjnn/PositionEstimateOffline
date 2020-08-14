@@ -45,11 +45,11 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
     # print "p:", delta_p[0]
     # print "v:", vel[0]
     # print "a:", acc[0]
-    t = np.arange(0, len(acc[0]))
-    plot_subplot(acc[0], "accelerometer", dt=DT, ylim=[-1, 1])
-    plot_subplot(vel[0], "velocity", dt=DT)
-    plot_subplot(delta_p[0], "position", dt=DT)
-    plt.show()
+    # t = np.arange(0, len(acc[0]))
+    # plot_subplot(acc[0], "accelerometer", dt=DT, ylim=[-1, 1])
+    # plot_subplot(vel[0], "velocity", dt=DT)
+    # plot_subplot(delta_p[0], "position", dt=DT)
+    # plt.show()
     return b_u
 
 
