@@ -57,25 +57,25 @@ def get_filtered_data(file_name):
     median_data[1] = median_filter(acc[1], 155)
     acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
 
-    GRAVITY = averaged_array = np.average(acc_filtered[0][10:310],axis=0)
+    GRAVITY = np.average(acc_filtered[0][10:310],axis=0) - np.array([0., 0., -0.1])
     print "GRAVITY:", GRAVITY
 
     for i in range(1, num_of_data):
         quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
         quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
-    print "sample acc raw:", acc[0][200]
-    print "sample acc filtered:", acc_filtered[0][200]
-    plot_subplot(acc[0], 'raw data', hold=True)
-    plot_subplot(acc_filtered[0], 'filtered data')
+    # print "sample acc raw:", acc[0][200]
+    # print "sample acc filtered:", acc_filtered[0][200]
+    # plot_subplot(acc[0], 'raw data', hold=True)
+    # plot_subplot(acc_filtered[0], 'filtered data')
     for i in range(1, num_of_data):
-        acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
+        # acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
         acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-        acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
+        # acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
         acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
-    print "sample acc filtered rotated:", acc_filtered[0][200]
+    # print "sample acc filtered rotated:", acc_filtered[0][200]
 
-    plot_subplot(acc_filtered[0], 'filtered data')
-    plt.show()
+    # plot_subplot(acc_filtered[0], 'filtered data')
+    # plt.show()
 
     # print "************", index
     # INDEX += 1
@@ -96,7 +96,7 @@ if __name__ == '__main__':
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
     # print "error_filtered:", input_filtered[-1]
-    # plot_subplot(input_filtered[:,3:], 'b_u IMU1 part filtered')
+    # plot_subplot(input_filtered[:,:3], 'b_u IMU0 part filtered')
     # plt.show()
 
     stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]
