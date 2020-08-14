@@ -57,7 +57,7 @@ def get_filtered_data(file_name):
     median_data[1] = median_filter(acc[1], 155)
     acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
 
-    GRAVITY = np.average(acc_filtered[0][10:310],axis=0) - np.array([0., 0., -0.1])
+    GRAVITY = np.average(acc_filtered[0][10:310],axis=0)
     print "GRAVITY:", GRAVITY
 
     for i in range(1, num_of_data):
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     # plt.show()
 
     # input_raw = kf.calculate_b_u(acc, quat)
-    input_filtered = kf.calculate_b_u(acc_filtered, quat)
+    input_filtered = kf.calculate_b_u(acc_filtered, quat[:][10:])
 
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
