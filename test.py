@@ -23,9 +23,9 @@ acc = [acc1_data, acc2_data]
 #  MEDIAN DATA
 # def get_avg(arr):
 
-test_arr = [np.arange(0,3).reshape(1,3),np.arange(4,7).reshape(1,3)]
-# print test_arr
-a = np.array([[0,1,2],[4,5,6]])
-b = np.array(acc1_data)
-averaged_array = np.average(acc1_data,axis=0)
-print averaged_array
+# test_arr = [np.arange(0,3).reshape(1,3),np.arange(4,7).reshape(1,3)]
+# # print test_arr
+# a = np.array([[0,1,2],[4,5,6]])
+# b = np.array(acc1_data)
+# averaged_array = np.average(acc1_data,axis=0)
+# print averaged_array

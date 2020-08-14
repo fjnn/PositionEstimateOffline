@@ -60,6 +60,7 @@ def get_filtered_data(file_name):
 
     GRAVITY = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)],axis=0)  # 26=win_size/2 + 1
     print "GRAVITY:", GRAVITY
+    # print "acc_filtered_sample", acc_filtered[0][26:52]
 
 
     for i in range(1, num_of_data):
@@ -70,11 +71,17 @@ def get_filtered_data(file_name):
     # plot_subplot(acc[0], 'raw data', hold=True)
     # plot_subplot(acc_filtered[0], 'filtered data')
     for i in range(1, num_of_data):
-        # acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
+        acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
         acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-        # acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
+        acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
         acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
-    # print "sample acc filtered rotated:", acc_filtered[0][200]
+
+    offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
+
+    for i in range(0, num_of_imu):
+        for j in range(0, num_of_data):
+            acc_filtered[i][j] = acc_filtered[i][j]-offset
+    # print "sample acc filtered rotated:", acc_filtered[0][26:52]
 
     # plot_subplot(acc_filtered[0], 'filtered data')
     # plt.show()
