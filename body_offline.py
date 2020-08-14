@@ -51,13 +51,13 @@ def get_filtered_data(file_name):
     acc_filtered = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
     median_data = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
 
-    median_data[0] = median_filter(acc[0], 155)
-    acc_filtered[0] = freq_filter(median_data[0], 155, cutoff/fs)
+    median_data[0] = median_filter(acc[0], 51)
+    acc_filtered[0] = freq_filter(median_data[0], 51, cutoff/fs)
 
-    median_data[1] = median_filter(acc[1], 155)
-    acc_filtered[1] = freq_filter(median_data[1], 155, cutoff/fs)
+    median_data[1] = median_filter(acc[1], 51)
+    acc_filtered[1] = freq_filter(median_data[1], 51, cutoff/fs)
 
-    GRAVITY = np.average(acc_filtered[0][10:310],axis=0)
+    GRAVITY = np.average(acc_filtered[0][40:60],axis=0)
     print "GRAVITY:", GRAVITY
 
     for i in range(1, num_of_data):
