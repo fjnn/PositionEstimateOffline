@@ -12,8 +12,9 @@ import numpy as np
 from util import*
 
 
-def calculate_b_u(acc, quat, index=0):
+def calculate_b_u(acc, quat, win_size=51, index=0):
     DT = 0.02
+    half_window = (win_size+1)*0.5
     delta_p = np.empty([len(acc), acc[0].shape[0], 3])
     vel = np.empty([len(acc), acc[0].shape[0], 3])
     b_u = np.empty([acc[0].shape[0], 6])

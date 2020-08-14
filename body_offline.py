@@ -41,6 +41,7 @@ def get_filtered_data(file_name):
     cur_dir = os.getcwd()
     fs = 512.0
     cutoff = 10.0
+    win_size = 51
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat = read_data_xlsx(file_path)
@@ -51,13 +52,13 @@ def get_filtered_data(file_name):
     acc_filtered = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
     median_data = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
 
-    median_data[0] = median_filter(acc[0], 51)
-    acc_filtered[0] = freq_filter(median_data[0], 51, cutoff/fs)
+    median_data[0] = median_filter(acc[0], win_size)
+    acc_filtered[0] = freq_filter(median_data[0], win_size, cutoff/fs)
 
-    median_data[1] = median_filter(acc[1], 51)
-    acc_filtered[1] = freq_filter(median_data[1], 51, cutoff/fs)
+    median_data[1] = median_filter(acc[1], win_size)
+    acc_filtered[1] = freq_filter(median_data[1], win_size, cutoff/fs)
 
-    GRAVITY = np.average(acc_filtered[0][26:152],axis=0)  # 26=win_size/2 + 1
+    GRAVITY = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)],axis=0)  # 26=win_size/2 + 1
     print "GRAVITY:", GRAVITY
 
 
@@ -92,7 +93,7 @@ if __name__ == '__main__':
     # plt.show()
 
     # input_raw = kf.calculate_b_u(acc, quat)
-    input_filtered = kf.calculate_b_u(acc_filtered, quat[:][10:])
+    input_filtered = kf.calculate_b_u(acc_filtered, quat)
 
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
