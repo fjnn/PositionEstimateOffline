@@ -112,10 +112,10 @@ if __name__ == '__main__':
     stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]
     estimateCovariance = np.eye(stateMatrix.shape[0])
     transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
-    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 0.001
+    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 10
     measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
     observationMatrix = np.array([[1,0,0,-1,0,0],[0,1,0,0,-1,0],[0,0,1,0,0,-1]], dtype=np.float32)
-    measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 1000
+    measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 10
     kalman = KalmanFilter(X=stateMatrix,
                           P=estimateCovariance,
                           F=transitionMatrix,
@@ -132,7 +132,8 @@ if __name__ == '__main__':
         kalman.correct(measurement[i])
         estimated_position[i] = kalman.X[:3]
     estimated_position = estimated_position.reshape((len(acc[0]), 3))
-    print "estimated_position", estimated_position
-    plot_subplot(delta_p[0], "delta_p")
+    print "estimated_position", estimated_position[:-10][:3]
+    print "b_u", input_filtered[:-10]
+    # plot_subplot(delta_p[0], "delta_p")
     plot_subplot(estimated_position, 'state estimate')
     plt.show()

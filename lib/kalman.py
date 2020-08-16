@@ -13,7 +13,7 @@ from util import*
 
 
 def calculate_b_u(acc, quat, win_size=51, index=0):
-    DT = 0.02
+    DT = 0.01
     half_window = (win_size+1)*0.5
     delta_p = np.empty([len(acc), acc[0].shape[0], 3])
     vel = np.empty([len(acc), acc[0].shape[0], 3])
@@ -36,9 +36,10 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
         delta_p[1][i] = delta_p[1][i-1]+vel[1][i-1]*DT+0.5*acc[1][i]*DT*DT
 
         vel[0][i] = vel[0][i-1]+acc[0][i]*DT
-        vel[1][i] = acc[1][i]*DT
+        vel[1][i] = vel[1][i-1]+acc[1][i]*DT
 
-        b_u[i] = np.concatenate(((delta_p[0][i]-delta_p[0][i-1]), (delta_p[1][i]-delta_p[1][i-1])), axis=0)
+        # b_u[i] = np.concatenate(((delta_p[0][i]-delta_p[0][i-1]), (delta_p[1][i]-delta_p[1][i-1])), axis=0)
+        # b_u[i] = np.concatenate(((delta_p[0][i]-delta_p[0][i-1]), (delta_p[1][i]-delta_p[1][i-1])), axis=0)
     # print "acc:", acc[0].shape
     # print "vel:", vel[0].shape
     # print "delta_p", delta_p[0].shape
@@ -48,7 +49,8 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
     # t = np.arange(0, len(acc[0]))
     # plot_subplot(acc[0], "accelerometer", dt=DT, ylim=[-1, 1])
     # plot_subplot(vel[0], "velocity", dt=DT)
-    # plot_subplot(delta_p[0], "position", dt=DT)
+    plot_subplot(delta_p[1], "delta_p_IMU1", dt=DT)
+    plot_subplot(delta_p[0], "delta_p_IMU0", dt=DT)
     # plt.show()
     return delta_p, b_u
 
