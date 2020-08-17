@@ -143,4 +143,6 @@ class KalmanFilter:
         self.X += K.dot(Z - self.H.dot(self.X))
         self.P = self.P - K.dot(self.H).dot(self.P)
 
+        # self.X[:3] = self.X[:3]+self.X[3:]
+
         return self.X

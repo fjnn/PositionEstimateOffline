@@ -126,8 +126,8 @@ if __name__ == '__main__':
     estimateCovariance = np.eye(stateMatrix.shape[0])
     transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
     # processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 1000
-    # processNoiseCov = np.array([[1000,0,0,0,0,0],[0, 1000, 0, 0, 0, 0],[0, 0, 1000, 0, 0, 0],[0, 0, 0, 0.001, 0, 0], [0, 0, 0, 0, 0.001, 0], [0, 0, 0, 0, 0, 0.001]], dtype=np.float32) * 1000
-    processNoiseCov = np.array([[0.001,0,0,0,0,0],[0, 0.001, 0, 0, 0, 0],[0, 0, 0.001, 0, 0, 0],[0, 0, 0, 1000, 0, 0], [0, 0, 0, 0, 1000, 0], [0, 0, 0, 0, 0, 1000]], dtype=np.float32) * 1000
+    processNoiseCov = np.array([[1000,0,0,0,0,0],[0, 1000, 0, 0, 0, 0],[0, 0, 1000, 0, 0, 0],[0, 0, 0, 0.001, 0, 0], [0, 0, 0, 0, 0.001, 0], [0, 0, 0, 0, 0, 0.001]], dtype=np.float32) * 1000
+    # processNoiseCov = np.array([[0.001,0,0,0,0,0],[0, 0.001, 0, 0, 0, 0],[0, 0, 0.001, 0, 0, 0],[0, 0, 0, 1000, 0, 0], [0, 0, 0, 0, 1000, 0], [0, 0, 0, 0, 0, 1000]], dtype=np.float32) * 1000
     print processNoiseCov
     measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
     observationMatrix = np.array([[1,0,0,-1,0,0],[0,1,0,0,-1,0],[0,0,1,0,0,-1]], dtype=np.float32)
