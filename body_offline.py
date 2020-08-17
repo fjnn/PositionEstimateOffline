@@ -44,7 +44,9 @@ def get_filtered_data(file_name):
     win_size = 51
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
-    acc, quat = read_data_xlsx(file_path)
+    acc, quat, measurement = read_data_xlsx(file_path)
+
+    sys.exit("test done")
     num_of_imu = acc.shape[0]
     num_of_data = acc[0].shape[0]
     print "num_of_imu:", num_of_imu
@@ -113,7 +115,8 @@ if __name__ == '__main__':
     estimateCovariance = np.eye(stateMatrix.shape[0])
     transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
     processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 10
-    measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
+    # measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
+    measurementStateMatrix = "from xlsx measurement column difference"
     observationMatrix = np.array([[1,0,0,-1,0,0],[0,1,0,0,-1,0],[0,0,1,0,0,-1]], dtype=np.float32)
     measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 10
     kalman = KalmanFilter(X=stateMatrix,
