@@ -126,10 +126,11 @@ if __name__ == '__main__':
     stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]
     estimateCovariance = np.eye(stateMatrix.shape[0])
     transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
-    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 10
+    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 1000
     measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
     observationMatrix = np.array([[1,0,0,-1,0,0],[0,1,0,0,-1,0],[0,0,1,0,0,-1]], dtype=np.float32)
-    measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 10
+    # observationMatrix = np.array([[-1,0,0,1,0,0],[0,-1,0,0,1,0],[0,0,-1,0,0,1]], dtype=np.float32)
+    measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 0.0001
     kalman = KalmanFilter(X=stateMatrix,
                           P=estimateCovariance,
                           F=transitionMatrix,

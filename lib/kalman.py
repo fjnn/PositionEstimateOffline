@@ -48,7 +48,7 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
         vel[1][i] = vel[1][i-1]+acc[1][i]*DT
 
         b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
-        print "b_u[i]", b_u[-1]
+        print "b_u[i]",i, b_u[-1]
         # b_u[i] = np.concatenate(((delta_p[0][i]-delta_p[0][i-1]), (delta_p[1][i]-delta_p[1][i-1])), axis=0)
     # print "acc:", acc[0].shape
     # print "vel:", vel[0].shape
@@ -59,8 +59,8 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
     # t = np.arange(0, len(acc[0]))
     # plot_subplot(acc[0], "accelerometer", dt=DT)
     # plot_subplot(vel[0], "velocity", dt=DT)
-    # plot_subplot(pos[1], "pos_IMU1", dt=DT)
-    # plot_subplot(pos[0], "pos_IMU0", dt=DT)
+    plot_subplot(pos[1], "pos_IMU1", dt=DT)
+    plot_subplot(pos[0], "pos_IMU0", dt=DT)
     # plt.show()
     return pos, b_u
 
