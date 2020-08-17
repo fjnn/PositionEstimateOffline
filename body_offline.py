@@ -162,4 +162,4 @@ if __name__ == '__main__':
     ax.set_xlabel('Time [sec]')
     ax.set_title('b_u')
     ax.legend()
-    # plt.show()
+    plt.show()

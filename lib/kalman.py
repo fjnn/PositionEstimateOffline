@@ -109,11 +109,13 @@ class KalmanFilter:
         self.M = M.reshape(self.F.shape[0],1)
         self.index += 1
         # Project the state ahead
-        if self.index == (2503 or 2504):
-            print "X prev:", self.X
+        if self.index == 2503:
+            print "X prev:", self.X[2]-self.X[5]
             # print "index:", self.index
         # print "M:", self.M
         self.X = self.F.dot(self.X) + self.M
+        if self.index == 2503:
+            print "X prev2:", self.X[2]-self.X[5]
         # print "F:", self.F
         self.P = self.F.dot(self.P).dot(self.F.T) + self.Q
         self.index += 1
@@ -137,7 +139,7 @@ class KalmanFilter:
         # print "size Z: ", Z.shape
         if self.index == 2504:
             print "index:", self.index
-            print "X after:", self.X
+            print "X after:", self.X[2]-self.X[5]
         self.X += K.dot(Z - self.H.dot(self.X))
         self.P = self.P - K.dot(self.H).dot(self.P)
 
