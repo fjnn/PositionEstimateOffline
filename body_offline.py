@@ -81,11 +81,12 @@ def get_filtered_data(file_name):
     # print "sample acc filtered:", acc_filtered[0][200]
     # plot_subplot(acc[0], 'raw data', hold=True)
     # plot_subplot(acc_filtered[0], 'filtered data')
-    for i in range(1, num_of_data):
-        acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
-        acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-        acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
-        acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
+
+    # for i in range(1, num_of_data):
+    #     acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
+    #     acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
+    #     acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
+    #     acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
 
     offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
     print "offset", offset
@@ -111,8 +112,10 @@ if __name__ == '__main__':
     # plot_subplot(acc_filtered[0], 'filtered acc data', hold=True)
     # plt.show()
 
-    # input_raw = kf.calculate_b_u(acc, quat)
-    delta_p, input_filtered = kf.calculate_b_u(acc_filtered, quat)
+    # delta_p, input_raw = kf.calculate_b_u(acc, quat)
+    pos, input_filtered = kf.calculate_b_u(acc_filtered, quat)
+
+    # sys.exit("done")
 
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
@@ -124,8 +127,7 @@ if __name__ == '__main__':
     estimateCovariance = np.eye(stateMatrix.shape[0])
     transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
     processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 10
-    # measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
-    measurementStateMatrix = "from xlsx measurement column difference"
+    measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
     observationMatrix = np.array([[1,0,0,-1,0,0],[0,1,0,0,-1,0],[0,0,1,0,0,-1]], dtype=np.float32)
     measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 10
     kalman = KalmanFilter(X=stateMatrix,
@@ -138,14 +140,26 @@ if __name__ == '__main__':
                           M=input_filtered)
     current_prediction = np.empty([len(acc[0]), 6, 1])
     measurement = np.zeros((len(acc[0]), 3, 1))
-    estimated_position = np.zeros((len(acc[0]), 3, 1))
+    estimated_position_0 = np.zeros((len(acc[0]), 3, 1))
+    estimated_position_1 = np.zeros((len(acc[0]), 3, 1))
     for i in range(len(acc[0])):
         current_prediction[i] = kalman.predict(M=input_filtered[i])
         kalman.correct(measurement[i])
-        estimated_position[i] = kalman.X[:3]
-    estimated_position = estimated_position.reshape((len(acc[0]), 3))
-    print "estimated_position", estimated_position[:-10][:3]
-    print "b_u", input_filtered[:-10]
+        estimated_position_0[i] = kalman.X[:3]
+        estimated_position_1[i] = kalman.X[3:]
+    estimated_position_0 = estimated_position_0.reshape((len(acc[0]), 3))
+    estimated_position_1 = estimated_position_1.reshape((len(acc[0]), 3))
+    # print "estimated_position", estimated_position_0[:-10][:3]
+    plot_subplot(estimated_position_0, 'state estimate_0')
+    plot_subplot(estimated_position_1, 'state estimate_1')
+    # print "b_u", input_filtered[:-10]
     # plot_subplot(delta_p[0], "delta_p")
-    plot_subplot(estimated_position, 'state estimate')
+
+    fig, ax=plt.subplots()
+    index=np.arange(len(input_filtered))*0.01
+    ax.plot(index, input_filtered, label="b_u")
+    ax.set_xlim([0,len(input_filtered)*0.01])
+    ax.set_xlabel('Time [sec]')
+    ax.set_title('b_u')
+    ax.legend()
     plt.show()
