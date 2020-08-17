@@ -19,10 +19,12 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
     delta_p = np.empty([len(acc), acc[0].shape[0], 3])
     vel = np.empty([len(acc), acc[0].shape[0], 3])
     b_u = np.empty([acc[0].shape[0], 6])
+    diff_IMU_test = np.empty([len(acc), acc[0].shape[0], 3])
     for i in range(len(acc)):
         delta_p[i][0] = np.zeros(3)
         vel[i][0] = np.zeros(3)
         pos[i][0] = np.zeros(3)
+        diff_IMU_test[i][0] = np.zeros(3)
         # TODO: alttakini de multiple IMU icin yap
     for i in range(1, 26):  # until window_size/2 +1
     #  This recovers the errors in the calibration step
@@ -35,7 +37,11 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
         pos[0][i] = np.zeros(3)
         pos[1][i] = np.zeros(3)
 
-        b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
+        diff_IMU_test[0][i] = np.zeros(3)
+        diff_IMU_test[1][i] = np.zeros(3)
+
+        # b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
+        b_u[i] = np.concatenate((diff_IMU_test[0][i], diff_IMU_test[1][i]), axis=0)
         #  This has to chage if you don't use zero array for this part
     for i in range(26, acc[0].shape[0]):  # until window_size/2 +1
         delta_p[0][i] = vel[0][i-1]*DT+0.5*acc[0][i]*DT*DT
@@ -47,7 +53,11 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
         vel[0][i] = vel[0][i-1]+acc[0][i]*DT
         vel[1][i] = vel[1][i-1]+acc[1][i]*DT
 
-        b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
+        diff_IMU_test[0][i] = delta_p[0][i]-delta_p[0][i-1]
+        diff_IMU_test[1][i] = delta_p[1][i]-delta_p[1][i-1]
+
+        # b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
+        b_u[i] = np.concatenate((diff_IMU_test[0][i], diff_IMU_test[1][i]), axis=0)
         # print "b_u[i]",i, b_u[-1]
         # b_u[i] = np.concatenate(((delta_p[0][i]-delta_p[0][i-1]), (delta_p[1][i]-delta_p[1][i-1])), axis=0)
     # print "acc:", acc[0].shape
@@ -58,9 +68,10 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
     # print "a:", acc[0]
     # t = np.arange(0, len(acc[0]))
     # plot_subplot(acc[0], "accelerometer", dt=DT)
-    # plot_subplot(vel[0], "velocity", dt=DT)
-    plot_subplot(pos[1], "pos_IMU1", dt=DT)
-    plot_subplot(pos[0], "pos_IMU0", dt=DT)
+    plot_subplot(vel[0], "velocity0", dt=DT)
+    plot_subplot(vel[1], "velocity1", dt=DT)
+    # plot_subplot(pos[1], "pos_IMU1", dt=DT)
+    # plot_subplot(pos[0], "pos_IMU0", dt=DT)
     # plt.show()
     return pos, b_u
 

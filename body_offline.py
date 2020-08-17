@@ -46,7 +46,6 @@ def get_filtered_data(file_name):
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat, measurement = read_data_xlsx(file_path)
     measurement_diff = measurement[0]-measurement[1]
-    print measurement_diff
     fig, ax=plt.subplots()
     index=np.arange(len(measurement_diff))*0.01
     ax.plot(index, measurement_diff, label="measurement")
