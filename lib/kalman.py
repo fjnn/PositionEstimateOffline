@@ -48,7 +48,7 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
         vel[1][i] = vel[1][i-1]+acc[1][i]*DT
 
         b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
-        print "b_u[i]",i, b_u[-1]
+        # print "b_u[i]",i, b_u[-1]
         # b_u[i] = np.concatenate(((delta_p[0][i]-delta_p[0][i-1]), (delta_p[1][i]-delta_p[1][i-1])), axis=0)
     # print "acc:", acc[0].shape
     # print "vel:", vel[0].shape
@@ -105,14 +105,16 @@ class KalmanFilter:
             updated self.X
         """
         # print "self.x: {0}, index:{1}".format(self.X, self.index)
-        self.M = M
+        self.M = M.reshape(self.F.shape[0],1)
         self.index += 1
         # Project the state ahead
-        self.X = self.F.dot(self.X) + self.M.dot(self.M)
+        # print "X:", self.X
+        # print "M:", self.M
+        self.X = self.F.dot(self.X) + self.M
+        # print "F:", self.F
         self.P = self.F.dot(self.P).dot(self.F.T) + self.Q
         self.index += 1
 
-        # print "u:", self.M
         return self.X
 
     def correct(self, Z):
