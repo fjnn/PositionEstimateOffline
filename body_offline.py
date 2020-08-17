@@ -81,11 +81,11 @@ def get_filtered_data(file_name):
     # plot_subplot(acc[0], 'raw data', hold=True)
     # plot_subplot(acc_filtered[0], 'filtered data')
 
-    # for i in range(1, num_of_data):
-    #     acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
-    #     acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-    #     acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
-    #     acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
+    for i in range(1, num_of_data):
+        acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
+        acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
+        acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
+        acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
 
     offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
     print "offset", offset
@@ -162,4 +162,4 @@ if __name__ == '__main__':
     ax.set_xlabel('Time [sec]')
     ax.set_title('b_u')
     ax.legend()
-    plt.show()
+    # plt.show()
