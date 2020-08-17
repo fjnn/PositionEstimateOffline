@@ -53,8 +53,10 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
         vel[0][i] = vel[0][i-1]+acc[0][i]*DT
         vel[1][i] = vel[1][i-1]+acc[1][i]*DT
 
-        diff_IMU_test[0][i] = delta_p[0][i]-delta_p[0][i-1]
-        diff_IMU_test[1][i] = delta_p[1][i]-delta_p[1][i-1]
+        # diff_IMU_test[0][i] = delta_p[0][i]-delta_p[0][i-1]
+        # diff_IMU_test[1][i] = delta_p[1][i]-delta_p[1][i-1]
+        diff_IMU_test[0][i] = delta_p[0][i]
+        diff_IMU_test[1][i] = delta_p[1][i]
 
         # b_u[i] = np.concatenate((delta_p[0][i], delta_p[1][i]), axis=0)
         b_u[i] = np.concatenate((diff_IMU_test[0][i], diff_IMU_test[1][i]), axis=0)
@@ -68,8 +70,8 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
     # print "a:", acc[0]
     # t = np.arange(0, len(acc[0]))
     # plot_subplot(acc[0], "accelerometer", dt=DT)
-    plot_subplot(vel[0], "velocity0", dt=DT)
-    plot_subplot(vel[1], "velocity1", dt=DT)
+    plot_subplot(diff_IMU_test[0], "delta_p_IMU0", dt=DT)
+    plot_subplot(diff_IMU_test[1], "delta_p_IMU1", dt=DT)
     # plot_subplot(pos[1], "pos_IMU1", dt=DT)
     # plot_subplot(pos[0], "pos_IMU0", dt=DT)
     # plt.show()
