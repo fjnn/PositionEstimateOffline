@@ -46,13 +46,13 @@ def get_filtered_data(file_name):
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat, measurement = read_data_xlsx(file_path)
     measurement_diff = measurement[0]-measurement[1]
-    fig, ax=plt.subplots()
-    index=np.arange(len(measurement_diff))*0.01
-    ax.plot(index, measurement_diff, label="measurement")
-    ax.set_xlim([0,len(measurement_diff)*0.01])
-    ax.set_xlabel('Time [sec]')
-    ax.set_title('measurement_diff')
-    ax.legend()
+    # fig, ax=plt.subplots()
+    # index=np.arange(len(measurement_diff))*0.01
+    # ax.plot(index, measurement_diff, label="measurement")
+    # ax.set_xlim([0,len(measurement_diff)*0.01])
+    # ax.set_xlabel('Time [sec]')
+    # ax.set_title('measurement_diff')
+    # ax.legend()
 
     # sys.exit("test done")
     num_of_imu = acc.shape[0]
@@ -100,21 +100,25 @@ def get_filtered_data(file_name):
 
     # print "************", index
     # INDEX += 1
-    return acc, quat, acc_filtered
+    return acc, quat, acc_filtered, measurement_diff
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         raise ValueError('No file name specified')
-    acc, quat, acc_filtered = get_filtered_data(sys.argv[1])
+    acc, quat, acc_filtered, measurement = get_filtered_data(sys.argv[1])
     # plot_subplot(acc[0], 'raw acc data', hold=True)
     # plot_subplot(acc_filtered[0], 'filtered acc data', hold=True)
     # plt.show()
 
     # delta_p, input_raw = kf.calculate_b_u(acc, quat)
     pos, input_filtered = kf.calculate_b_u(acc_filtered, quat)
+    print "pos", pos.shape
+    plot_subplot(pos[1], 'pos_IMU1')
+    plot_subplot(pos[0], 'pos_IMU0')
+    plt.show()
 
-    # sys.exit("done")
+    sys.exit("done")
 
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
@@ -124,15 +128,15 @@ if __name__ == '__main__':
 
     stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]
     estimateCovariance = np.eye(stateMatrix.shape[0])
-    transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
-    # processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 1000
-    processNoiseCov = np.array([[1000,0,0,0,0,0],[0, 1000, 0, 0, 0, 0],[0, 0, 1000, 0, 0, 0],[0, 0, 0, 0.001, 0, 0], [0, 0, 0, 0, 0.001, 0], [0, 0, 0, 0, 0, 0.001]], dtype=np.float32) * 1000
+    # transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
+    transitionMatrix = np.array([[1,0,0,0,0,0],[0, 1, 0, 0, 0, 0],[0, 0, 1, 0, 0, 0],[1, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0]], dtype=np.float32)
+    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 0.01
+    # processNoiseCov = np.array([[1000,0,0,0,0,0],[0, 1000, 0, 0, 0, 0],[0, 0, 1000, 0, 0, 0],[0, 0, 0, 0.001, 0, 0], [0, 0, 0, 0, 0.001, 0], [0, 0, 0, 0, 0, 0.001]], dtype=np.float32) * 1000
     # processNoiseCov = np.array([[0.001,0,0,0,0,0],[0, 0.001, 0, 0, 0, 0],[0, 0, 0.001, 0, 0, 0],[0, 0, 0, 1000, 0, 0], [0, 0, 0, 0, 1000, 0], [0, 0, 0, 0, 0, 1000]], dtype=np.float32) * 1000
-    print processNoiseCov
     measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
-    observationMatrix = np.array([[1,0,0,-1,0,0],[0,1,0,0,-1,0],[0,0,1,0,0,-1]], dtype=np.float32)
+    observationMatrix = np.array([[-1,0,0,1,0,0],[0,-1,0,0,1,0],[0,0,-1,0,0,1]], dtype=np.float32)
     # observationMatrix = np.array([[-1,0,0,1,0,0],[0,-1,0,0,1,0],[0,0,-1,0,0,1]], dtype=np.float32)
-    measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 1000
+    measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 0.01
     kalman = KalmanFilter(X=stateMatrix,
                           P=estimateCovariance,
                           F=transitionMatrix,
@@ -142,12 +146,12 @@ if __name__ == '__main__':
                           R=measurementNoiseCov,
                           M=input_filtered)
     current_prediction = np.empty([len(acc[0]), 6, 1])
-    measurement = np.zeros((len(acc[0]), 3, 1))
+    # measurement = np.zeros((len(acc[0]), 3, 1))
     estimated_position_0 = np.zeros((len(acc[0]), 3, 1))
     estimated_position_1 = np.zeros((len(acc[0]), 3, 1))
     for i in range(len(acc[0])):
         current_prediction[i] = kalman.predict(M=input_filtered[i])
-        kalman.correct(measurement[i])
+        kalman.correct(measurement[i].reshape((3,1)))
         estimated_position_0[i] = kalman.X[:3]
         estimated_position_1[i] = kalman.X[3:]
     estimated_position_0 = estimated_position_0.reshape((len(acc[0]), 3))

@@ -58,8 +58,8 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
     # print "a:", acc[0]
     # t = np.arange(0, len(acc[0]))
     # plot_subplot(acc[0], "accelerometer", dt=DT)
-    plot_subplot(vel[0], "vel_IMU0", dt=DT)
-    plot_subplot(vel[1], "vel_IMU1", dt=DT)
+    # plot_subplot(vel[0], "vel_IMU0", dt=DT)
+    # plot_subplot(vel[1], "vel_IMU1", dt=DT)
     # plot_subplot(pos[1], "pos_IMU1", dt=DT)
     # plot_subplot(pos[0], "pos_IMU0", dt=DT)
     # plt.show()
@@ -140,7 +140,8 @@ class KalmanFilter:
         if self.index == 2504:
             print "index:", self.index
             print "X after:", self.X[2]-self.X[5]
-        self.X += K.dot(Z - self.H.dot(self.X))
+        print "error", (self.H.dot(self.X)), "y", Z
+        self.X = self.X + K.dot(Z - self.H.dot(self.X))
         self.P = self.P - K.dot(self.H).dot(self.P)
 
         # self.X[:3] = self.X[:3]+self.X[3:]

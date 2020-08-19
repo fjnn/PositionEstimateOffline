@@ -75,7 +75,7 @@ def read_data_xlsx(file_path):
 		quat_data[i] = np.empty([num_rows, 4])
 		acc_data[i] = imu_df[i][['acc_x','acc_y','acc_z']].to_numpy(dtype='float')
 		quat_data[i] = imu_df[i][['quat_x', 'quat_y', 'quat_z', 'quat_w']].to_numpy(dtype='float')
-		measurement[i] = imu_df[i][['measurement']].to_numpy(dtype='float')
+		measurement[i] = imu_df[i][['meas_x','meas_y','meas_z']].to_numpy(dtype='float')
 	measurement = np.array(measurement)
 	return acc_data, quat_data, measurement
 
