@@ -116,9 +116,9 @@ if __name__ == '__main__':
     print "pos", pos.shape
     plot_subplot(pos[1], 'pos_IMU1')
     plot_subplot(pos[0], 'pos_IMU0')
-    plt.show()
+    # plt.show()
 
-    sys.exit("done")
+    # sys.exit("done")
 
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]
     estimateCovariance = np.eye(stateMatrix.shape[0])
     # transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
-    transitionMatrix = np.array([[1,0,0,0,0,0],[0, 1, 0, 0, 0, 0],[0, 0, 1, 0, 0, 0],[1, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0]], dtype=np.float32)
+    transitionMatrix = np.array([[1,0,0,0,0,0],[0, 1, 0, 0, 0, 0],[0, 0, 1, 0, 0, 0],[0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1]], dtype=np.float32)
     processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 0.01
     # processNoiseCov = np.array([[1000,0,0,0,0,0],[0, 1000, 0, 0, 0, 0],[0, 0, 1000, 0, 0, 0],[0, 0, 0, 0.001, 0, 0], [0, 0, 0, 0, 0.001, 0], [0, 0, 0, 0, 0, 0.001]], dtype=np.float32) * 1000
     # processNoiseCov = np.array([[0.001,0,0,0,0,0],[0, 0.001, 0, 0, 0, 0],[0, 0, 0.001, 0, 0, 0],[0, 0, 0, 1000, 0, 0], [0, 0, 0, 0, 1000, 0], [0, 0, 0, 0, 0, 1000]], dtype=np.float32) * 1000

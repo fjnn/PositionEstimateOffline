@@ -135,12 +135,12 @@ class KalmanFilter:
         K = self.P.dot(self.H.T).dot(np.linalg.inv(self.H.dot(self.P).dot(self.H.T) + self.R))
         # print "size X:", self.X.shape
         # print "size K:", K.shape
-        # print "size H:", self.H.shape
+        # print "size H:", self.H
         # print "size Z: ", Z.shape
         if self.index == 2504:
             print "index:", self.index
             print "X after:", self.X[2]-self.X[5]
-        print "error", (self.H.dot(self.X)), "y", Z
+        # print "error", (self.H.dot(self.X)), "y", Z
         self.X = self.X + K.dot(Z - self.H.dot(self.X))
         self.P = self.P - K.dot(self.H).dot(self.P)
 
