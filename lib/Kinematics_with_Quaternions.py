@@ -56,9 +56,15 @@ def q_rotate(q, v):
     @params v: to be rotated vector. Represented as numpy array. Expressed as pure quaternion. [v0, v1, v2] -> [x, y, z]
     '''
     if type(q) == np.ndarray:
+        #  [q0, q1, q2, q3] -> [w, x, y, z]
         v_rotated = np.array([v[0]*(q[0]**2 + q[1]**2 - q[2]**2 - q[3]**2) + 2*v[1]*(q[1]*q[2]-q[0]*q[3]) + 2*v[2]*(q[0]*q[2] + q[1]*q[3]),
                           2*v[0]*(q[0]*q[3] + q[1]*q[2]) + v[1]*(q[0]**2 - q[1]**2 + q[2]**2 - q[3]**2) + 2*v[2]*(q[2]*q[3] - q[0]*q[1]),
                           2*v[0]*(q[1]*q[3] - q[0]*q[2]) + 2*v[1]*(q[0]*q[1] + q[2]*q[3]) + v[2]*(q[0]**2 - q[1]**2 - q[2]**2 + q[3]**2)])
+
+        # [q0, q1, q2, q3] -> [x, y, z, w]
+        # v_rotated = np.array([v[0]*(q[1]**2 + q[2]**2 - q[3]**2 - q[0]**2) + 2*v[1]*(q[2]*q[3]-q[1]*q[0]) + 2*v[2]*(q[1]*q[3] + q[2]*q[0]),
+        #                   2*v[0]*(q[1]*q[0] + q[2]*q[3]) + v[1]*(q[1]**2 - q[2]**2 + q[3]**2 - q[0]**2) + 2*v[2]*(q[3]*q[0] - q[1]*q[2]),
+        #                   2*v[0]*(q[2]*q[0] - q[1]*q[3]) + 2*v[1]*(q[1]*q[2] + q[3]*q[0]) + v[2]*(q[1]**2 - q[2]**2 - q[3]**2 + q[0]**2)])
     elif type(q) == Quaternion and type(v) == np.ndarray:
         v_rotated = np.array([v[0]*(q.w**2 + q.x**2 - q.y**2 - q.z**2) + 2*v[1]*(q.x*q.y-q.w*q.z) + 2*v[2]*(q.w*q.y + q.x*q.z),
                           2*v[0]*(q.w*q.z + q.x*q.y) + v[1]*(q.w**2 - q.x**2 + q.y**2 - q.z**2) + 2*v[2]*(q.y*q.z - q.w*q.x),

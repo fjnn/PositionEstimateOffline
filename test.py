@@ -2,6 +2,7 @@ import numpy as np
 from geometry_msgs.msg import Quaternion
 from lib.kalman import*
 import sys
+import lib.Kinematics_with_Quaternions as kinematic
 
 # b = Quaternion(0, 0, 0, 1)
 # a = np.array(3*[Quaternion(0, 0, 0, 1)])
@@ -15,13 +16,24 @@ import sys
 #
 # sys.exit("I am done")
 
-X = np.array([[0.],[0.],[0.],[0.],[0.],[0.]])
-M = np.array([0.,0.,0.,0.,0.,0.])
-F = np.eye(6, dtype=np.float32)
+# X = np.array([[0.],[0.],[0.],[0.],[0.],[0.]])
+# M = np.array([0.,0.,0.,0.,0.,0.])
+# F = np.eye(6, dtype=np.float32)
+#
+# print "X", X
+# print "F", F
+# print "M", M
+#
+# result = F.dot(X) + M.reshape(6,1)
+# print result
 
-print "X", X
-print "F", F
-print "M", M
+def rotate(q,v):
+    v_rotated = np.zeros(3)
+    v_rotated = np.array([v[0]*(q[1]**2 + q[2]**2 - q[3]**2 - q[0]**2) + 2*v[1]*(q[2]*q[3]-q[1]*q[0]) + 2*v[2]*(q[1]*q[3] + q[2]*q[0]),
+                      2*v[0]*(q[1]*q[0] + q[2]*q[3]) + v[1]*(q[1]**2 - q[2]**2 + q[3]**2 - q[0]**2) + 2*v[2]*(q[3]*q[0] - q[1]*q[2]),
+                      2*v[0]*(q[2]*q[0] - q[1]*q[3]) + 2*v[1]*(q[1]*q[2] + q[3]*q[0]) + v[2]*(q[1]**2 - q[2]**2 - q[3]**2 + q[0]**2)])
+    return v_rotated
 
-result = F.dot(X) + M.reshape(6,1)
-print result
+rotated1 = rotate(np.array([0.7071068, 0., 0., 0.7071068]),np.array([-0.1454, -0.1, 9.7963]))
+rotated = kinematic.q_rotate(np.array([0., 0.7071068, 0., 0.7071068]),np.array([10.0, 0., 0]))
+print rotated1

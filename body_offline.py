@@ -46,15 +46,7 @@ def get_filtered_data(file_name):
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat, measurement = read_data_xlsx(file_path)
     measurement_diff = measurement[0]-measurement[1]
-    # fig, ax=plt.subplots()
-    # index=np.arange(len(measurement_diff))*0.01
-    # ax.plot(index, measurement_diff, label="measurement")
-    # ax.set_xlim([0,len(measurement_diff)*0.01])
-    # ax.set_xlabel('Time [sec]')
-    # ax.set_title('measurement_diff')
-    # ax.legend()
 
-    # sys.exit("test done")
     num_of_imu = acc.shape[0]
     num_of_data = acc[0].shape[0]
     print "num_of_imu:", num_of_imu
@@ -70,25 +62,51 @@ def get_filtered_data(file_name):
 
     GRAVITY = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)],axis=0)  # 26=win_size/2 + 1
     print "GRAVITY:", GRAVITY
+    # print "quat:", type(quat[0][26])
     # print "acc_filtered_sample", acc_filtered[0][26:52]
 
 
     for i in range(1, num_of_data):
         quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
         quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
-    # print "sample acc raw:", acc[0][200]
-    # print "sample acc filtered:", acc_filtered[0][200]
+    # print "sample acc raw 200:", acc[0][200]
+    print "sample acc filtered 200:", acc_filtered[0][200]
+    # print "sample acc raw 1100:", acc[0][1100]
+    # print "sample acc filtered 1100:", acc_filtered[0][1100]
     # plot_subplot(acc[0], 'raw data', hold=True)
-    # plot_subplot(acc_filtered[0], 'filtered data')
+    plot_subplot(acc_filtered[0], 'filtered data')
 
-    for i in range(1, num_of_data):
-        acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
-        acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-        acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
-        acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
+    # for i in range(1, num_of_data):
+    #     acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
+    #     acc_filtered[0][i] = acc_filtered[0][i] + GRAVITY
+    #     acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
+    #     acc_filtered[1][i] = acc_filtered[1][i] + GRAVITY
 
-    offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
-    print "offset", offset
+
+    i = 200
+    acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
+    print "quat 200", quat[0][200]
+    print "acc_rotated 200", acc_filtered[0][200]
+    acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
+    print "acc_rotated_gravity 200", acc_filtered[0][200]
+    acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
+    acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
+
+    i = 1100
+    acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
+    acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
+    acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
+    acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
+
+    # offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
+    # print "offset", offset
+    # print "quat 200", quat[0][200]
+    # print "quat 1000", quat[0][1100]
+    # print "acc_rotated 200", acc_filtered[0][200]
+    # print "acc_rotated 1100", acc_filtered[0][1100]
+    plot_subplot(acc_filtered[0], 'rotated data')
+    # plt.show()
+    sys.exit("done")
 
     for i in range(0, num_of_imu):
         for j in range(0, num_of_data):
