@@ -45,6 +45,11 @@ def get_filtered_data(file_name):
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat, measurement = read_data_xlsx(file_path)
+
+    quat1 = np.array([  0.9659258, 0.1830127, 0.1830127, 0])
+    arr1 = np.array([0., 0., 10.0])
+    print "rot_arr1", kinematic.q_rotate(quat1, arr1)
+    sys.exit("done")
     measurement_diff = measurement[0]-measurement[1]
 
     num_of_imu = acc.shape[0]
