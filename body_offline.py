@@ -46,7 +46,7 @@ def get_filtered_data(file_name):
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat, measurement = read_data_xlsx(file_path)
 
-    quat1 = np.array([  0.9659258, 0.1830127, 0.1830127, 0])
+    quat1 = np.array([0.8660254,  0.4082483, 0.2041241, 0.2041241])
     arr1 = np.array([0., 0., 10.0])
     print "rot_arr1", kinematic.q_rotate(quat1, arr1)
     sys.exit("done")
