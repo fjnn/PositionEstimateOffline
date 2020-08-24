@@ -98,12 +98,6 @@ def get_filtered_data(file_name):
     # print "acc_rotated 200", acc_filtered[0][200]
     # print "acc_rotated 1100", acc_filtered[0][1100]
     plot_subplot(acc_filtered[0], 'rotated data')
-    plt.show()
-    sys.exit("done")
-
-    for i in range(0, num_of_imu):
-        for j in range(0, num_of_data):
-            acc_filtered[i][j] = acc_filtered[i][j]-offset
     # print "sample acc filtered rotated:", acc_filtered[0][26:52]
 
     # plot_subplot(acc_filtered[0], 'filtered data')
