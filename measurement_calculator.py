@@ -29,6 +29,10 @@ def measured_rotation(l,q):
     @params q: list of joint rotation wrt previous link body frame. quaternion represented as numpy array n*[q0, q1, q2, q3] -> [w, x, y, z]
     @params l: list of body links. Represented as numpy array. Expressed as pure quaternion. [v0, v1, v2] -> [x, y, z]
     @return: measurement list
+
+    All quaternions are IMU readings so they are representing their own body frames' rotation with respect to global frame. Not the link's body frames (contrary to link definitions). Therefore, there is no need to q_multiply two consequtive quaternions.abs
+
+    All body_links are represented with respect to their own body frame
     '''
     q_accumulated = np.zeros([len(q), len(q[0]), 4], dtype=np.float64)
     q_accumulated[0][0] = np.array([1, 0, 0, 0], dtype=np.float64)
@@ -39,8 +43,6 @@ def measured_rotation(l,q):
         l[0] = kinematic.q_rotate(q[0][i], l[0])
         l[1] = kinematic.q_rotate(q[1][i], l[1])
 
-
-    print "final quaternions", q_accumulated[1][-1]
     rotated_links = np.array([l[0], l[0]+l[1]])
 
     return rotated_links
