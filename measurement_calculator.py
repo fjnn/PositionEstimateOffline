@@ -33,22 +33,14 @@ def measured_rotation(l,q):
     q_accumulated = np.zeros([len(q), len(q[0]), 4], dtype=np.float64)
     q_accumulated[0][0] = np.array([1, 0, 0, 0], dtype=np.float64)
     q_accumulated[1][0] = np.array([1, 0, 0, 0], dtype=np.float64)
-    # for i in range(1, len(q[0])):
-    #     # q_accumulated[0][i] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[0][i-1], q[0][i]))
-    #     q_accumulated[0][i] = kinematic.q_multiply(q_accumulated[0][i-1], q[0][i])
-    #     # q_accumulated[1][i] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[1][i-1], q[1][i]))
-    #     l[0] = kinematic.q_rotate(q[0][i], l[0])
-    #     # l[1] = kinematic.q_rotate(q[1][i], l[1])
-    print "q0", q[0][1], "q1", q[0][2], "q01", kinematic.q_multiply(q[0][0], q[0][1])
-    q_accumulated[0][1] = kinematic.q_norm(kinematic.q_multiply(q[0][0], q[0][1]))
-    q_accumulated[0][2] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[0][1], q[0][2]))
-    q_accumulated[0][3] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[0][2], q[0][3]))
-    q_accumulated[0][4] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[0][3], q[0][4]))
-    q_accumulated[0][5] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[0][4], q[0][5]))
+    for i in range(1, len(q[0])):
+        q_accumulated[0][i] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[0][i-1], q[0][i]))
+        q_accumulated[1][i] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[1][i-1], q[1][i]))
+        l[0] = kinematic.q_rotate(q[0][i], l[0])
+        l[1] = kinematic.q_rotate(q[1][i], l[1])
 
 
-    # print "final quaternions", q_accumulated[0][:5]
-    sys.exit("done")
+    print "final quaternions", q_accumulated[1][-1]
     rotated_links = np.array([l[0], l[0]+l[1]])
 
     return rotated_links
