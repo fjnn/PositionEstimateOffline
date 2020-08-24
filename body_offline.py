@@ -84,27 +84,15 @@ def get_filtered_data(file_name):
         acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
         acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
 
+    # for i in range(920,1100):
+    #     print "quat", i,":", quat[0][i]
+    #     print "acc_rotated",i,":", acc_filtered[0][i]
 
-    # i = 200
-    # acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
-    # print "quat 200", quat[0][200]
-    # print "acc_rotated 200", acc_filtered[0][200]
-    # acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-    # print "acc_rotated_gravity 200", acc_filtered[0][200]
-    # acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
-    # acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
-    #
-    # i = 1100
-    # acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
-    # print "quat 1100", quat[0][1100]
-    # print "acc_rotated 1100", acc_filtered[0][i]
-    # acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-    # print "acc_rotated_gravity 1100", acc_filtered[0][i]
-    # acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
-    # acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
-
-    # offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
-    # print "offset", offset
+    offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
+    for i in range(0, num_of_imu):
+        for j in range(0, num_of_data):
+            acc_filtered[i][j] = acc_filtered[i][j]-offset
+    print "offset", offset
     # print "quat 200", quat[0][200]
     # print "quat 1000", quat[0][1100]
     # print "acc_rotated 200", acc_filtered[0][200]
