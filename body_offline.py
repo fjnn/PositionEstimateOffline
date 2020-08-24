@@ -80,10 +80,10 @@ def get_filtered_data(file_name):
         # TODO: SLERP or filtering may be required
 
     # print "sample acc raw 200:", acc[0][200]
-    print "sample acc filtered 200:", acc_filtered[0][200]
+    # print "sample acc filtered 200:", acc_filtered[0][200]
     # print "sample acc raw 1100:", acc[0][1100]
     # print "sample acc filtered 1100:", acc_filtered[0][1100]
-    # plot_subplot(acc[0], 'raw data', hold=True)
+    plot_subplot(acc[0], 'raw data', hold=True)
     plot_subplot(acc_filtered[0], 'filtered data')
 
     for i in range(1, num_of_data):
@@ -122,16 +122,12 @@ if __name__ == '__main__':
     acc, quat, acc_filtered, measurement = get_filtered_data(sys.argv[1])
     # plot_subplot(acc[0], 'raw acc data', hold=True)
     # plot_subplot(acc_filtered[0], 'filtered acc data', hold=True)
-    # plt.show()
 
     # delta_p, input_raw = kf.calculate_b_u(acc, quat)
     pos, input_filtered = kf.calculate_b_u(acc_filtered, quat)
     print "pos", pos.shape
     plot_subplot(pos[1], 'pos_IMU1')
     plot_subplot(pos[0], 'pos_IMU0')
-    # plt.show()
-
-    # sys.exit("done")
 
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
@@ -143,7 +139,7 @@ if __name__ == '__main__':
     estimateCovariance = np.eye(stateMatrix.shape[0])
     # transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
     transitionMatrix = np.array([[1,0,0,0,0,0],[0, 1, 0, 0, 0, 0],[0, 0, 1, 0, 0, 0],[0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1]], dtype=np.float32)
-    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 0.01
+    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 1000
     # processNoiseCov = np.array([[1000,0,0,0,0,0],[0, 1000, 0, 0, 0, 0],[0, 0, 1000, 0, 0, 0],[0, 0, 0, 0.001, 0, 0], [0, 0, 0, 0, 0.001, 0], [0, 0, 0, 0, 0, 0.001]], dtype=np.float32) * 1000
     # processNoiseCov = np.array([[0.001,0,0,0,0,0],[0, 0.001, 0, 0, 0, 0],[0, 0, 0.001, 0, 0, 0],[0, 0, 0, 1000, 0, 0], [0, 0, 0, 0, 1000, 0], [0, 0, 0, 0, 0, 1000]], dtype=np.float32) * 1000
     measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
@@ -164,6 +160,7 @@ if __name__ == '__main__':
     estimated_position_1 = np.zeros((len(acc[0]), 3, 1))
     for i in range(len(acc[0])):
         current_prediction[i] = kalman.predict(M=input_filtered[i])
+        print "measurement", measurement[i]
         kalman.correct(measurement[i].reshape((3,1)))
         estimated_position_0[i] = kalman.X[:3]
         estimated_position_1[i] = kalman.X[3:]
