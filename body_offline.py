@@ -26,6 +26,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from lib.util import*
+from measurement_calculator import measured_rotation
 
 # CONSTANTS
 NUM = 4  # number of IMU
@@ -45,6 +46,12 @@ def get_filtered_data(file_name):
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat, measurement = read_data_xlsx(file_path)
+    link_1 = np.array([3, 0, 0])
+    link_2 = np.array([4, 0, 0])
+    body_link = np.array([link_1, link_2])
+    rotated_measurement = measured_rotation(body_link,quat)
+    print rotated_measurement
+    sys.exit("done")
     measurement_diff = measurement[0]-measurement[1]
 
     num_of_imu = acc.shape[0]

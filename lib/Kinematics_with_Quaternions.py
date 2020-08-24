@@ -35,6 +35,8 @@ from tf.transformations import quaternion_multiply
 from tf.transformations import quaternion_conjugate as conj
 import scipy.integrate as integrate
 
+import sys
+
 
 # Private Globals
 gravity = [0, -9.81, 0]  # TODO: can be tuned # gravity vector in global frame
@@ -45,7 +47,12 @@ def q_scale(q, s):
     '''
     Scale Quaternion objects
     '''
-    q_scaled = Quaternion(s*q.x, s*q.y, s*q.z, s*q.w)
+    if type(q) == Quaternion:
+        q_scaled = Quaternion(s*q.x, s*q.y, s*q.z, s*q.w)
+    elif type(q) == np.ndarray:
+        q_scaled = s*q
+    else:
+        print "unknown dtype"
     return q_scaled
 
 
@@ -122,13 +129,19 @@ def q_multiply(q, p):
         q_multiplied.y = q.w*p.y + q.y*p.w - q.x*p.z + q.z*p.x
         q_multiplied.z = q.w*p.z + q.z*p.w + q.x*p.y - q.y*p.x
         return q_multiplied
+    # elif type(q) == np.ndarray:
+    #     # print "type: np.array()"
+    #     q_multiplied = np.array([0.0, 0.0, 0.0, 1.0])  # 'xyzw'
+    #     q_multiplied[0] = q[3]*p[0] + q[0]*p[3] + q[1]*p[2] - q[2]*p[1]
+    #     q_multiplied[1] = q[3]*p[1] + q[1]*p[3] - q[0]*p[2] + q[2]*p[0]
+    #     q_multiplied[2] = q[3]*p[2] + q[2]*p[3] + q[0]*p[1] - q[1]*p[0]
+    #     q_multiplied[3] = q[3]*p[3] - q[0]*p[0] - q[1]*p[1] - q[2]*p[2]
     elif type(q) == np.ndarray:
-        # print "type: np.array()"
-        q_multiplied = np.array([0.0, 0.0, 0.0, 1.0])  # 'xyzw'
-        q_multiplied[0] = q[3]*p[0] + q[0]*p[3] + q[1]*p[2] - q[2]*p[1]
-        q_multiplied[1] = q[3]*p[1] + q[1]*p[3] - q[0]*p[2] + q[2]*p[0]
-        q_multiplied[2] = q[3]*p[2] + q[2]*p[3] + q[0]*p[1] - q[1]*p[0]
-        q_multiplied[3] = q[3]*p[3] - q[0]*p[0] - q[1]*p[1] - q[2]*p[2]
+        q_multiplied = np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float64)  # 'wxyz'
+        q_multiplied[0] = q[0]*p[0] - q[1]*p[1] - q[2]*p[2] - q[3]*p[3]
+        q_multiplied[1] = q[0]*p[1] + q[1]*p[0] - q[2]*p[3] - q[3]*p[2]
+        q_multiplied[2] = q[0]*p[2] - q[1]*p[3] + q[2]*p[0] + q[3]*p[1]
+        q_multiplied[3] = q[0]*p[3] + q[1]*p[2] - q[2]*p[1] + q[3]*p[0]
         return q_multiplied
     elif type(q) == type(q_pq):
         print "type: pyquaternion/Quaternion"
@@ -152,7 +165,12 @@ def q_tf_convert(q):
 
 
 def q_magnitude(q):
-    q_mag = sqrt((q.w**2 + q.x**2 + q.y**2 + q.z**2))
+    if type(q) == Quaternion:
+        q_mag = sqrt((q.w**2 + q.x**2 + q.y**2 + q.z**2))
+    elif type(q) == np.ndarray:
+        q_mag = sqrt((q[0]**2 + q[1]**2 + q[2]**2 + q[3]**2))
+    else:
+        print "unknown dtype"
     return q_mag
 
 
@@ -162,13 +180,15 @@ def v_magnitude(v):
 
 
 def q_norm(q):
-    try:
-        q_normalized = q_scale(q, q_magnitude(q)**(-1))
-    except ZeroDivisionError:
-        print("Magnitude is zero")
-        q_normalized = q
-    finally:
-        return q_normalized
+    # try:
+    #     q_normalized = q_scale(q, q_magnitude(q)**(-1))
+    # except ZeroDivisionError:
+    #     print("Magnitude is zero")
+    #     q_normalized = q
+    # finally:
+    #     return q_normalized
+    q_normalized = q_scale(q, q_magnitude(q)**(-1))
+    return q_normalized
 
 
 def find_angle(a, b):
