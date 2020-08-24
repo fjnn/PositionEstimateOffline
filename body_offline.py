@@ -46,15 +46,14 @@ def get_filtered_data(file_name):
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat, measurement = read_data_xlsx(file_path)
-    link_1 = np.array([3, 0, 0], dtype=np.float32)
-    link_2 = np.array([4, 0, 0], dtype=np.float32)
+    link_1 = np.array([0.3, 0, 0], dtype=np.float32)
+    link_2 = np.array([0.06, 0, 0], dtype=np.float32)
     body_link = np.array([link_1, link_2])
     rotated_measurement = measured_rotation(body_link,quat)
-    print rotated_measurement[0][-1]
-    print rotated_measurement[1][-1]
+    # print rotated_measurement[0][-1]
+    # print rotated_measurement[1][-1]
     measurement_diff = rotated_measurement[1]-rotated_measurement[0]
-    print "diff:", measurement_diff[-1]
-    sys.exit()
+    # print "diff:", measurement_diff[-1]
 
     num_of_imu = acc.shape[0]
     num_of_data = acc[0].shape[0]
