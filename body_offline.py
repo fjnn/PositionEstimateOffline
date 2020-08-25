@@ -46,15 +46,6 @@ def get_filtered_data(file_name):
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat, measurement = read_data_xlsx(file_path)
-    link_1 = np.array([340, 0, 0], dtype=np.float32)
-    link_2 = np.array([120, 0, 0], dtype=np.float32)
-    body_link = np.array([link_1, link_2])
-    rotated_measurement = measured_rotation(body_link,quat)
-    # print rotated_measurement[0][-1]
-    # print rotated_measurement[1][-1]
-    measurement_diff = rotated_measurement[1]-rotated_measurement[0]
-    # print "diff:", measurement_diff[-1]
-
     num_of_imu = acc.shape[0]
     num_of_data = acc[0].shape[0]
     # print "num_of_imu:", num_of_imu
@@ -73,18 +64,26 @@ def get_filtered_data(file_name):
     # print "quat:", type(quat[0][26])
     # print "acc_filtered_sample", acc_filtered[0][26:52]
 
-
     for i in range(1, num_of_data):
         quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
         quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
         # TODO: SLERP or filtering may be required
 
+    link_0 = np.array([0.34, 0, 0], dtype=np.float32)
+    link_1 = np.array([0.12, 0, 0], dtype=np.float32)
+    body_link = np.array([link_0, link_1])
+    rotated_measurement = measured_rotation(body_link,quat)
+    # print rotated_measurement[0][-1]
+    # print rotated_measurement[1][-1]
+    measurement_diff = rotated_measurement[1]-rotated_measurement[0]
+    # print "diff:", measurement_diff[-1]
+
     # print "sample acc raw 200:", acc[0][200]
     # print "sample acc filtered 200:", acc_filtered[0][200]
     # print "sample acc raw 1100:", acc[0][1100]
     # print "sample acc filtered 1100:", acc_filtered[0][1100]
-    plot_subplot(acc[0], 'raw data', hold=True)
-    plot_subplot(acc_filtered[0], 'filtered data')
+    plot_subplot(acc[1], 'raw data', hold=True)
+    plot_subplot(acc_filtered[1], 'filtered data')
 
     for i in range(1, num_of_data):
         acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
@@ -121,8 +120,9 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         raise ValueError('No file name specified')
     acc, quat, acc_filtered, measurement = get_filtered_data(sys.argv[1])
-    # plot_subplot(acc[0], 'raw acc data', hold=True)
-    # plot_subplot(acc_filtered[0], 'filtered acc data', hold=True)
+    plot_subplot(acc[0], 'raw acc data', hold=True)
+    # plot_subplot(acc_filtered[0], 'filtered acc0 data', hold=True)
+    # plot_subplot(acc_filtered[1], 'filtered acc1 data', hold=True)
 
     # delta_p, input_raw = kf.calculate_b_u(acc, quat)
     pos, input_filtered = kf.calculate_b_u(acc_filtered, quat)
@@ -140,7 +140,7 @@ if __name__ == '__main__':
     estimateCovariance = np.eye(stateMatrix.shape[0])
     # transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
     transitionMatrix = np.array([[1,0,0,0,0,0],[0, 1, 0, 0, 0, 0],[0, 0, 1, 0, 0, 0],[0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1]], dtype=np.float32)
-    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 1000
+    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 0.01
     # processNoiseCov = np.array([[1000,0,0,0,0,0],[0, 1000, 0, 0, 0, 0],[0, 0, 1000, 0, 0, 0],[0, 0, 0, 0.001, 0, 0], [0, 0, 0, 0, 0.001, 0], [0, 0, 0, 0, 0, 0.001]], dtype=np.float32) * 1000
     # processNoiseCov = np.array([[0.001,0,0,0,0,0],[0, 0.001, 0, 0, 0, 0],[0, 0, 0.001, 0, 0, 0],[0, 0, 0, 1000, 0, 0], [0, 0, 0, 0, 1000, 0], [0, 0, 0, 0, 0, 1000]], dtype=np.float32) * 1000
     measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
@@ -157,11 +157,11 @@ if __name__ == '__main__':
                           M=input_filtered)
     current_prediction = np.empty([len(acc[0]), 6, 1])
     # measurement = np.zeros((len(acc[0]), 3, 1))
+    print "measurement", measurement[:10]
     estimated_position_0 = np.zeros((len(acc[0]), 3, 1))
     estimated_position_1 = np.zeros((len(acc[0]), 3, 1))
     for i in range(len(acc[0])):
         current_prediction[i] = kalman.predict(M=input_filtered[i])
-        # print "measurement", measurement[i]
         kalman.correct(measurement[i].reshape((3,1)))
         estimated_position_0[i] = kalman.X[:3]
         estimated_position_1[i] = kalman.X[3:]

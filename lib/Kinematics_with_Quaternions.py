@@ -137,11 +137,18 @@ def q_multiply(q, p):
     #     q_multiplied[2] = q[3]*p[2] + q[2]*p[3] + q[0]*p[1] - q[1]*p[0]
     #     q_multiplied[3] = q[3]*p[3] - q[0]*p[0] - q[1]*p[1] - q[2]*p[2]
     elif type(q) == np.ndarray:
-        q_multiplied = np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float64)  # 'wxyz'
-        q_multiplied[0] = q[0]*p[0] - q[1]*p[1] - q[2]*p[2] - q[3]*p[3]
-        q_multiplied[1] = q[0]*p[1] + q[1]*p[0] - q[2]*p[3] - q[3]*p[2]
-        q_multiplied[2] = q[0]*p[2] - q[1]*p[3] + q[2]*p[0] + q[3]*p[1]
-        q_multiplied[3] = q[0]*p[3] + q[1]*p[2] - q[2]*p[1] + q[3]*p[0]
+        # print "type: np.array()"
+        q_multiplied = np.array([0.0, 0.0, 0.0, 1.0])  # 'wxyz'
+        q_multiplied[0] = q[3]*p[3] - q[0]*p[0] - q[1]*p[1] - q[2]*p[2]
+        q_multiplied[1] = q[3]*p[0] + q[0]*p[3] + q[1]*p[2] - q[2]*p[1]
+        q_multiplied[2] = q[3]*p[1] + q[1]*p[3] - q[0]*p[2] + q[2]*p[0]
+        q_multiplied[3] = q[3]*p[2] + q[2]*p[3] + q[0]*p[1] - q[1]*p[0]
+    # elif type(q) == np.ndarray:
+    #     q_multiplied = np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float64)  # 'wxyz'
+    #     q_multiplied[0] = q[0]*p[0] - q[1]*p[1] - q[2]*p[2] - q[3]*p[3]
+    #     q_multiplied[1] = q[0]*p[1] + q[1]*p[0] - q[2]*p[3] - q[3]*p[2]
+    #     q_multiplied[2] = q[0]*p[2] - q[1]*p[3] + q[2]*p[0] + q[3]*p[1]
+    #     q_multiplied[3] = q[0]*p[3] + q[1]*p[2] - q[2]*p[1] + q[3]*p[0]
         return q_multiplied
     elif type(q) == type(q_pq):
         print "type: pyquaternion/Quaternion"
