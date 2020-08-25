@@ -95,12 +95,6 @@ def get_filtered_data(file_name):
     #     print "quat", i,":", quat[0][i]
     #     print "acc_rotated",i,":", acc_filtered[0][i]
 
-    offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
-    for i in range(0, num_of_imu):
-        for j in range(0, num_of_data):
-            acc_filtered[i][j] = acc_filtered[i][j]-offset
-    print "offset", offset
-    # TODO: why there is such an offset?
     # print "quat 200", quat[0][200]
     # print "quat 1000", quat[0][1100]
     # print "acc_rotated 200", acc_filtered[0][200]
