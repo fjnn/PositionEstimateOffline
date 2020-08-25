@@ -34,6 +34,8 @@ def measured_rotation(l,q):
 
     All body_links are represented with respect to their own body frame
     '''
+    print "l0:", l[0]
+    print "l1:", l[1]
     q_accumulated = np.zeros([len(q), len(q[0]), 4], dtype=np.float64)
     q_accumulated[0][0] = np.array([1, 0, 0, 0], dtype=np.float64)
     q_accumulated[1][0] = np.array([1, 0, 0, 0], dtype=np.float64)
@@ -46,4 +48,7 @@ def measured_rotation(l,q):
         rotated_links[0][i] = l[0]
         rotated_links[1][i] = l[0]+l[1]
 
+    print l[0]
+    print l[1]
+    # sys.exit()
     return rotated_links

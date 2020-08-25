@@ -46,8 +46,8 @@ def get_filtered_data(file_name):
     print "cutoff_fs:", cutoff/fs
     file_path = os.path.join(cur_dir, 'data', file_name)
     acc, quat, measurement = read_data_xlsx(file_path)
-    link_1 = np.array([0.3, 0, 0], dtype=np.float32)
-    link_2 = np.array([0.06, 0, 0], dtype=np.float32)
+    link_1 = np.array([340, 0, 0], dtype=np.float32)
+    link_2 = np.array([120, 0, 0], dtype=np.float32)
     body_link = np.array([link_1, link_2])
     rotated_measurement = measured_rotation(body_link,quat)
     # print rotated_measurement[0][-1]
@@ -57,8 +57,8 @@ def get_filtered_data(file_name):
 
     num_of_imu = acc.shape[0]
     num_of_data = acc[0].shape[0]
-    print "num_of_imu:", num_of_imu
-    print "num_of_data:", num_of_data
+    # print "num_of_imu:", num_of_imu
+    # print "num_of_data:", num_of_data
     acc_filtered = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
     median_data = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
 
@@ -101,6 +101,7 @@ def get_filtered_data(file_name):
         for j in range(0, num_of_data):
             acc_filtered[i][j] = acc_filtered[i][j]-offset
     print "offset", offset
+    # TODO: why there is such an offset?
     # print "quat 200", quat[0][200]
     # print "quat 1000", quat[0][1100]
     # print "acc_rotated 200", acc_filtered[0][200]
@@ -160,7 +161,7 @@ if __name__ == '__main__':
     estimated_position_1 = np.zeros((len(acc[0]), 3, 1))
     for i in range(len(acc[0])):
         current_prediction[i] = kalman.predict(M=input_filtered[i])
-        print "measurement", measurement[i]
+        # print "measurement", measurement[i]
         kalman.correct(measurement[i].reshape((3,1)))
         estimated_position_0[i] = kalman.X[:3]
         estimated_position_1[i] = kalman.X[3:]
