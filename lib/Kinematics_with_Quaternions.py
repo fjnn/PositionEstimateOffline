@@ -204,7 +204,7 @@ def q_norm(q):
         print("Magnitude is zero")
         q_normalized = q
     finally:
-        print flag
+        # print flag
         return q_normalized
 
 

@@ -50,6 +50,10 @@ def get_filtered_data(file_name):
     num_of_data = acc[0].shape[0]
     # print "num_of_imu:", num_of_imu
     # print "num_of_data:", num_of_data
+    q_init = np.empty([num_of_imu, 4])
+    q_init[0] = np.array([0.70711, 0, 0, 0.70711])
+    q_init[1] = np.array([0.70711, 0, 0, 0.70711])
+
     acc_filtered = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
     median_data = np.empty([num_of_imu, acc[0].shape[0], acc[0].shape[1]])
 
@@ -59,31 +63,22 @@ def get_filtered_data(file_name):
     median_data[1] = median_filter(acc[1], win_size)
     acc_filtered[1] = freq_filter(median_data[1], win_size, cutoff/fs)
 
+    plot_subplot(acc[0], 'raw data', hold=True)
+    plot_subplot(acc_filtered[0], 'filtered data')
     plot_subplot(acc[1], 'raw data', hold=True)
     plot_subplot(acc_filtered[1], 'filtered data')
 
     GRAVITY = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)],axis=0)  # 26=win_size/2 + 1
     print "GRAVITY:", GRAVITY
-    # print "quat:", type(quat[0][26])
-    # print "acc_filtered_sample", acc_filtered[0][26:52]
 
-    quat[0][0] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
-    quat[0][1] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
-    quat[0][2] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
-    quat[0][3] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
-    quat[0][4] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
     for i in range(1, num_of_data):
-        # quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
-        quat[0][i] = kinematic.q_invert(quat[0][0])  # calibration quat
-        quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
-        # if i < 5:
-        #     print quat[0][i]
-
-    q1_test = np.array([0.96593,0.21132,0.10566,0.10566])
-    q2_test = np.array([0.92388,0.12416,0.3104, 0.18624])
-    q_mult = kinematic.q_norm(kinematic.q_multiply(q1_test, q2_test))
-    sys.exit(kinematic.q_magnitude(q_mult))
-        # TODO: SLERP or filtering may be required
+        # if (i > 20) and (i < 30):
+        #     print "quat before", i, quat[0][i]
+        quat[0][i] = kinematic.q_norm(kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0])))  # calibration quat
+        quat[1][i] = kinematic.q_norm(kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0])))  # calibration quat
+        # if (i > 20) and (i < 30):
+        #     print "quat after", i, quat[0][i]
+    # TODO: SLERP or filtering may be required
 
     link_0 = np.array([0.34, 0, 0], dtype=np.float32)
     link_1 = np.array([0.12, 0, 0], dtype=np.float32)
@@ -96,17 +91,23 @@ def get_filtered_data(file_name):
 
     # yine rotation hatasi var
     for i in range(1, num_of_data):
-        if (i < 10):
-            print "acc before", i, acc_filtered[1][i]
+        if (i > 20) and (i < 30):
+            print "acc before", i, acc_filtered[0][i]
+            print "quat used", i, quat[0][i]
         acc_filtered[0][i] = kinematic.q_rotate(kinematic.q_invert(quat[0][i]),acc_filtered[0][i])
-        acc_filtered[0][i] = acc_filtered[0][i] + GRAVITY
+        acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
         acc_filtered[1][i] = kinematic.q_rotate(kinematic.q_invert(quat[1][i]),acc_filtered[1][i])
-        acc_filtered[1][i] = acc_filtered[1][i] + GRAVITY
-        if (i < 10):
-            print "acc after", i, acc_filtered[1][i]
-            # print "quat", i, quat[1][i]
-    plot_subplot(acc_filtered[1], 'rotated acc')
-    # plt.show()
+        acc_filtered[1][i] = acc_filtered[0][i] - GRAVITY
+        if (i > 20) and (i < 30):
+            print "acc after", i, acc_filtered[0][i]
+
+    offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
+    for i in range(0, num_of_imu):
+        for j in range(0, num_of_data):
+            acc_filtered[i][j] = acc_filtered[i][j]-offset
+    print "offset", offset
+    plot_subplot(acc_filtered[0], 'rotated acc')
+    plt.show()
     sys.exit()
 
     # for i in range(920,1100):
