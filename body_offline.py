@@ -67,9 +67,22 @@ def get_filtered_data(file_name):
     # print "quat:", type(quat[0][26])
     # print "acc_filtered_sample", acc_filtered[0][26:52]
 
+    quat[0][0] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
+    quat[0][1] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
+    quat[0][2] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
+    quat[0][3] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
+    quat[0][4] = np.array([0.96593, 0.21132, 0.10566, 0.10566])
     for i in range(1, num_of_data):
-        quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
+        # quat[0][i] = kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0]))  # calibration quat
+        quat[0][i] = kinematic.q_invert(quat[0][0])  # calibration quat
         quat[1][i] = kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0]))  # calibration quat
+        # if i < 5:
+        #     print quat[0][i]
+
+    q1_test = np.array([0.96593,0.21132,0.10566,0.10566])
+    q2_test = np.array([0.92388,0.12416,0.3104, 0.18624])
+    q_mult = kinematic.q_norm(kinematic.q_multiply(q1_test, q2_test))
+    sys.exit(kinematic.q_magnitude(q_mult))
         # TODO: SLERP or filtering may be required
 
     link_0 = np.array([0.34, 0, 0], dtype=np.float32)
@@ -81,20 +94,17 @@ def get_filtered_data(file_name):
     measurement_diff = rotated_measurement[1]-rotated_measurement[0]
     # print "diff:", measurement_diff[-1]
 
-    # q_test = np.array([0.96593, 0, 0, 0.25882], dtype=np.float)
-    # v_test = np.array([3, 4, 5], dtype=np.float)
-    # v_test_rot = kinematic.q_rotate(q_test, v_test)
-    # sys.exit(v_test_rot)
-
     # yine rotation hatasi var
     for i in range(1, num_of_data):
+        if (i < 10):
+            print "acc before", i, acc_filtered[1][i]
         acc_filtered[0][i] = kinematic.q_rotate(kinematic.q_invert(quat[0][i]),acc_filtered[0][i])
-        # acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
+        acc_filtered[0][i] = acc_filtered[0][i] + GRAVITY
         acc_filtered[1][i] = kinematic.q_rotate(kinematic.q_invert(quat[1][i]),acc_filtered[1][i])
-        # acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
-        # if (i > 400) and (i < 600):
-        #     print "acc", i, acc_filtered[1][i]
-        #     print "quat", i, quat[1][i]
+        acc_filtered[1][i] = acc_filtered[1][i] + GRAVITY
+        if (i < 10):
+            print "acc after", i, acc_filtered[1][i]
+            # print "quat", i, quat[1][i]
     plot_subplot(acc_filtered[1], 'rotated acc')
     # plt.show()
     sys.exit()

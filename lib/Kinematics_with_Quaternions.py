@@ -115,14 +115,29 @@ def q_invert(q):
         print "unknown dtype"
         return q
 
+def q_mult_norm(q, p):
+    '''
+    Multiply quaternions and normalize the result to use in rotation
+    '''
+    q_qp = np.array([1, 0, 0, 0], dtype=np.float64)  # w-x-y-z
+    if (type(p) == type(q)) and (type(p) == np.ndarray):
+        q_qp[0] = q[0]*p[0] - q[1]*p[1] - q[2]*p[2] - q[3]*p[3]
+        q_qp[1] = q[0]*p[1] + q[1]*p[0] + q[2]*p[3] - q[3]*p[2]
+        q_qp[2] = q[0]*p[2] - q[1]*p[3] + q[2]*p[0] + q[3]*p[1]
+        q_qp[3] = q[0]*p[3] + q[1]*p[2] - q[2]*p[1] + q[3]*p[0]
+    else:
+        "unknown quaternion type"
+    return q_qp
+
 
 def q_multiply(q, p):
     '''
     Multiply quaternions
     '''
-    q_pq = pq.Quaternion()
+    q_qp = pq.Quaternion()
     if type(q) == Quaternion:
         # print "type: geometry_msgs.msg/Quaternion"
+        # TODO: test it before use it. p*q -> q*p olmus olabilir
         q_multiplied = Quaternion()
         q_multiplied.w = q.w*p.w - q.x*p.x - q.y*p.y - q.z*p.z
         q_multiplied.x = q.w*p.x + q.x*p.w + q.y*p.z - q.z*p.y
@@ -137,23 +152,17 @@ def q_multiply(q, p):
     #     q_multiplied[2] = q[3]*p[2] + q[2]*p[3] + q[0]*p[1] - q[1]*p[0]
     #     q_multiplied[3] = q[3]*p[3] - q[0]*p[0] - q[1]*p[1] - q[2]*p[2]
     elif type(q) == np.ndarray:
-        # print "type: np.array()"
-        q_multiplied = np.array([0.0, 0.0, 0.0, 1.0])  # 'wxyz'
-        q_multiplied[0] = q[3]*p[3] - q[0]*p[0] - q[1]*p[1] - q[2]*p[2]
-        q_multiplied[1] = q[3]*p[0] + q[0]*p[3] + q[1]*p[2] - q[2]*p[1]
-        q_multiplied[2] = q[3]*p[1] + q[1]*p[3] - q[0]*p[2] + q[2]*p[0]
-        q_multiplied[3] = q[3]*p[2] + q[2]*p[3] + q[0]*p[1] - q[1]*p[0]
-    # elif type(q) == np.ndarray:
-    #     q_multiplied = np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float64)  # 'wxyz'
-    #     q_multiplied[0] = q[0]*p[0] - q[1]*p[1] - q[2]*p[2] - q[3]*p[3]
-    #     q_multiplied[1] = q[0]*p[1] + q[1]*p[0] - q[2]*p[3] - q[3]*p[2]
-    #     q_multiplied[2] = q[0]*p[2] - q[1]*p[3] + q[2]*p[0] + q[3]*p[1]
-    #     q_multiplied[3] = q[0]*p[3] + q[1]*p[2] - q[2]*p[1] + q[3]*p[0]
-        return q_multiplied
-    elif type(q) == type(q_pq):
+        q_qp = np.array([1, 0, 0, 0], dtype=np.float64)  # w-x-y-z
+        if (type(p) == type(q)) and (type(p) == np.ndarray):
+            q_qp[0] = q[0]*p[0] - q[1]*p[1] - q[2]*p[2] - q[3]*p[3]
+            q_qp[1] = q[0]*p[1] + q[1]*p[0] + q[2]*p[3] - q[3]*p[2]
+            q_qp[2] = q[0]*p[2] - q[1]*p[3] + q[2]*p[0] + q[3]*p[1]
+            q_qp[3] = q[0]*p[3] + q[1]*p[2] - q[2]*p[1] + q[3]*p[0]
+        return q_qp
+    elif type(q) == type(q_qp):
         print "type: pyquaternion/Quaternion"
-        q_multiplied = q*p
-        return q_multiplied
+        q_qp = q*p
+        return q_qp
     else:
         print "unknown dtype"
         return q
@@ -187,15 +196,16 @@ def v_magnitude(v):
 
 
 def q_norm(q):
-    # try:
-    #     q_normalized = q_scale(q, q_magnitude(q)**(-1))
-    # except ZeroDivisionError:
-    #     print("Magnitude is zero")
-    #     q_normalized = q
-    # finally:
-    #     return q_normalized
-    q_normalized = q_scale(q, q_magnitude(q)**(-1))
-    return q_normalized
+    flag = "normalization problem"
+    try:
+        q_normalized = q_scale(q, q_magnitude(q)**(-1))
+        flag = "normalized"
+    except ZeroDivisionError:
+        print("Magnitude is zero")
+        q_normalized = q
+    finally:
+        print flag
+        return q_normalized
 
 
 def find_angle(a, b):
