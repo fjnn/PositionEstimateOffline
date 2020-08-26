@@ -84,10 +84,8 @@ def get_filtered_data(file_name):
     link_1 = np.array([0.12, 0, 0], dtype=np.float32)
     body_link = np.array([link_0, link_1])
     rotated_measurement = measured_rotation(body_link,quat)
-    # print rotated_measurement[0][-1]
-    # print rotated_measurement[1][-1]
     measurement_diff = rotated_measurement[1]-rotated_measurement[0]
-    # print "diff:", measurement_diff[-1]
+    measurement_diff[0] = link_1
 
     for i in range(1, num_of_data):
         if (i > 500) and (i < 750):
@@ -106,6 +104,10 @@ def get_filtered_data(file_name):
     for i in range(0, num_of_imu):
         for j in range(0, num_of_data):
             acc_filtered[i][j] = acc_filtered[i][j]-offset[i]
+            # SOLVE IT LATER!!!!!
+            if i == 1:
+                acc_filtered[i][j][1] = 0.0
+                acc_filtered[i][j][0] = 0.0
     print "offset", offset[0], offset[1]
     plot_subplot(acc_filtered[0], 'linear acc0')
     plot_subplot(acc_filtered[1], 'linear acc1')
