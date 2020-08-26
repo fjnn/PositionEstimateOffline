@@ -90,18 +90,17 @@ def get_filtered_data(file_name):
     # print "diff:", measurement_diff[-1]
 
     for i in range(1, num_of_data):
-        if (i < 20):
+        if (i > 500) and (i < 750):
             print "acc before", i, acc_filtered[1][i]
             print "quat used", i, quat[1][i]
         acc_filtered[0][i] = kinematic.q_rotate(kinematic.q_invert(quat[0][i]),acc_filtered[0][i])
         acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
         acc_filtered[1][i] = kinematic.q_rotate(kinematic.q_invert(quat[1][i]),acc_filtered[1][i])
         acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
-        if (i < 20):
+        if (i > 500) and (i < 750):
             print "acc after", i, acc_filtered[1][i]
 
     offset = np.zeros([num_of_imu, 3], dtype=np.float)
-    print "offset", offset
     offset[0] = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
     offset[1] = np.average(acc_filtered[1][(win_size/2 +1):(win_size+1)], axis=0)
     for i in range(0, num_of_imu):
@@ -118,14 +117,14 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         raise ValueError('No file name specified')
     acc, quat, acc_filtered, measurement = get_filtered_data(sys.argv[1])
-    plot_subplot(acc[0], 'raw acc0 data', hold=True)
-    plot_subplot(acc[1], 'raw acc1 data', hold=True)
+    # plot_subplot(acc[0], 'raw acc0 data', hold=True)
+    # plot_subplot(acc[1], 'raw acc1 data', hold=True)
 
     # delta_p, input_raw = kf.calculate_b_u(acc, quat)
     pos, input_filtered = kf.calculate_b_u(acc_filtered, quat)
     print "pos", pos.shape
-    plot_subplot(pos[1], 'pos_IMU1')
-    plot_subplot(pos[0], 'pos_IMU0')
+    # plot_subplot(pos[1], 'pos_IMU1')
+    # plot_subplot(pos[0], 'pos_IMU0')
     plt.show()
     sys.exit()
 

@@ -57,9 +57,9 @@ def calculate_b_u(acc, quat, win_size=51, index=0):
     # print "v:", vel[0]
     # print "a:", acc[0]
     # t = np.arange(0, len(acc[0]))
-    plot_subplot(acc[1], "acc_IMU1", dt=DT)
-    plot_subplot(vel[1], "vel_IMU1", dt=DT)
-    plot_subplot(pos[1], "pos_IMU1", dt=DT)
+    # plot_subplot(acc[1], "acc_IMU1", dt=DT)
+    # plot_subplot(vel[1], "vel_IMU1", dt=DT)
+    # plot_subplot(pos[1], "pos_IMU1", dt=DT)
     plt.show()
     sys.exit()
     return pos, b_u
