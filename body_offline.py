@@ -59,6 +59,9 @@ def get_filtered_data(file_name):
     median_data[1] = median_filter(acc[1], win_size)
     acc_filtered[1] = freq_filter(median_data[1], win_size, cutoff/fs)
 
+    plot_subplot(acc[1], 'raw data', hold=True)
+    plot_subplot(acc_filtered[1], 'filtered data')
+
     GRAVITY = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)],axis=0)  # 26=win_size/2 + 1
     print "GRAVITY:", GRAVITY
     # print "quat:", type(quat[0][26])
@@ -78,18 +81,23 @@ def get_filtered_data(file_name):
     measurement_diff = rotated_measurement[1]-rotated_measurement[0]
     # print "diff:", measurement_diff[-1]
 
-    # print "sample acc raw 200:", acc[0][200]
-    # print "sample acc filtered 200:", acc_filtered[0][200]
-    # print "sample acc raw 1100:", acc[0][1100]
-    # print "sample acc filtered 1100:", acc_filtered[0][1100]
-    plot_subplot(acc[1], 'raw data', hold=True)
-    plot_subplot(acc_filtered[1], 'filtered data')
+    # q_test = np.array([0.96593, 0, 0, 0.25882], dtype=np.float)
+    # v_test = np.array([3, 4, 5], dtype=np.float)
+    # v_test_rot = kinematic.q_rotate(q_test, v_test)
+    # sys.exit(v_test_rot)
 
+    # yine rotation hatasi var
     for i in range(1, num_of_data):
-        acc_filtered[0][i] = kinematic.q_rotate(quat[0][i],acc_filtered[0][i])
-        acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
-        acc_filtered[1][i] = kinematic.q_rotate(quat[1][i],acc_filtered[1][i])
-        acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
+        acc_filtered[0][i] = kinematic.q_rotate(kinematic.q_invert(quat[0][i]),acc_filtered[0][i])
+        # acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
+        acc_filtered[1][i] = kinematic.q_rotate(kinematic.q_invert(quat[1][i]),acc_filtered[1][i])
+        # acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
+        # if (i > 400) and (i < 600):
+        #     print "acc", i, acc_filtered[1][i]
+        #     print "quat", i, quat[1][i]
+    plot_subplot(acc_filtered[1], 'rotated acc')
+    # plt.show()
+    sys.exit()
 
     # for i in range(920,1100):
     #     print "quat", i,":", quat[0][i]

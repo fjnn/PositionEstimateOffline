@@ -104,8 +104,8 @@ def q_invert(q):
         q_inverted.z = -q.z
         q_inverted.w = q.w
         return q_inverted
-    elif type(q) == np.ndarray:  # x-y-z-w
-        q_inverted = [-q[0], -q[1], -q[2], q[3]]
+    elif type(q) == np.ndarray:  # w-x-y-z
+        q_inverted = np.array([q[0], -q[1], -q[2], -q[3]])
         return q_inverted
     elif type(q) == type(q_test):
         q_inverted = pq.Quaternion(q.w, -q.x, -q.y, -q.z)
