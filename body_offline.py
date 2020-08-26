@@ -72,12 +72,12 @@ def get_filtered_data(file_name):
     print "GRAVITY:", GRAVITY
 
     for i in range(1, num_of_data):
-        # if (i > 20) and (i < 30):
-        #     print "quat before", i, quat[0][i]
+        # if (i < 20):
+        #     print "quat before", i, quat[1][i]
         quat[0][i] = kinematic.q_norm(kinematic.q_multiply(quat[0][i], kinematic.q_invert(quat[0][0])))  # calibration quat
         quat[1][i] = kinematic.q_norm(kinematic.q_multiply(quat[1][i], kinematic.q_invert(quat[1][0])))  # calibration quat
-        # if (i > 20) and (i < 30):
-        #     print "quat after", i, quat[0][i]
+        # if (i < 20):
+        #     print "quat after", i, quat[1][i]
     # TODO: SLERP or filtering may be required
 
     link_0 = np.array([0.34, 0, 0], dtype=np.float32)
@@ -89,43 +89,28 @@ def get_filtered_data(file_name):
     measurement_diff = rotated_measurement[1]-rotated_measurement[0]
     # print "diff:", measurement_diff[-1]
 
-    # yine rotation hatasi var
     for i in range(1, num_of_data):
-        if (i > 20) and (i < 30):
-            print "acc before", i, acc_filtered[0][i]
-            print "quat used", i, quat[0][i]
+        if (i < 20):
+            print "acc before", i, acc_filtered[1][i]
+            print "quat used", i, quat[1][i]
         acc_filtered[0][i] = kinematic.q_rotate(kinematic.q_invert(quat[0][i]),acc_filtered[0][i])
         acc_filtered[0][i] = acc_filtered[0][i] - GRAVITY
         acc_filtered[1][i] = kinematic.q_rotate(kinematic.q_invert(quat[1][i]),acc_filtered[1][i])
-        acc_filtered[1][i] = acc_filtered[0][i] - GRAVITY
-        if (i > 20) and (i < 30):
-            print "acc after", i, acc_filtered[0][i]
+        acc_filtered[1][i] = acc_filtered[1][i] - GRAVITY
+        if (i < 20):
+            print "acc after", i, acc_filtered[1][i]
 
-    offset = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
+    offset = np.zeros([num_of_imu, 3], dtype=np.float)
+    print "offset", offset
+    offset[0] = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
+    offset[1] = np.average(acc_filtered[1][(win_size/2 +1):(win_size+1)], axis=0)
     for i in range(0, num_of_imu):
         for j in range(0, num_of_data):
-            acc_filtered[i][j] = acc_filtered[i][j]-offset
-    print "offset", offset
-    plot_subplot(acc_filtered[0], 'rotated acc')
-    plt.show()
-    sys.exit()
+            acc_filtered[i][j] = acc_filtered[i][j]-offset[i]
+    print "offset", offset[0], offset[1]
+    plot_subplot(acc_filtered[0], 'linear acc0')
+    plot_subplot(acc_filtered[1], 'linear acc1')
 
-    # for i in range(920,1100):
-    #     print "quat", i,":", quat[0][i]
-    #     print "acc_rotated",i,":", acc_filtered[0][i]
-
-    # print "quat 200", quat[0][200]
-    # print "quat 1000", quat[0][1100]
-    # print "acc_rotated 200", acc_filtered[0][200]
-    # print "acc_rotated 1100", acc_filtered[0][1100]
-    plot_subplot(acc_filtered[0], 'rotated data')
-    # print "sample acc filtered rotated:", acc_filtered[0][26:52]
-
-    # plot_subplot(acc_filtered[0], 'filtered data')
-    # plt.show()
-
-    # print "************", index
-    # INDEX += 1
     return acc, quat, acc_filtered, measurement_diff
 
 
@@ -133,15 +118,16 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         raise ValueError('No file name specified')
     acc, quat, acc_filtered, measurement = get_filtered_data(sys.argv[1])
-    plot_subplot(acc[0], 'raw acc data', hold=True)
-    # plot_subplot(acc_filtered[0], 'filtered acc0 data', hold=True)
-    # plot_subplot(acc_filtered[1], 'filtered acc1 data', hold=True)
+    plot_subplot(acc[0], 'raw acc0 data', hold=True)
+    plot_subplot(acc[1], 'raw acc1 data', hold=True)
 
     # delta_p, input_raw = kf.calculate_b_u(acc, quat)
     pos, input_filtered = kf.calculate_b_u(acc_filtered, quat)
     print "pos", pos.shape
     plot_subplot(pos[1], 'pos_IMU1')
     plot_subplot(pos[0], 'pos_IMU0')
+    plt.show()
+    sys.exit()
 
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
