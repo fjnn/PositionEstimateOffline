@@ -125,8 +125,6 @@ if __name__ == '__main__':
     print "pos", pos.shape
     # plot_subplot(pos[1], 'pos_IMU1')
     # plot_subplot(pos[0], 'pos_IMU0')
-    plt.show()
-    sys.exit()
 
     # print "error_raw:", input_raw[-1]
     # plot_subplot(input_raw[:,:3], 'b_u IMU0 part raw')
@@ -171,11 +169,11 @@ if __name__ == '__main__':
     # print "b_u", input_filtered[:-10]
     # plot_subplot(delta_p[0], "delta_p")
 
-    fig, ax=plt.subplots()
-    index=np.arange(len(input_filtered))*0.01
-    ax.plot(index, input_filtered, label="b_u")
-    ax.set_xlim([0,len(input_filtered)*0.01])
-    ax.set_xlabel('Time [sec]')
-    ax.set_title('b_u')
-    ax.legend()
+    # fig, ax=plt.subplots()
+    # index=np.arange(len(input_filtered))*0.01
+    # ax.plot(index, input_filtered, label="b_u")
+    # ax.set_xlim([0,len(input_filtered)*0.01])
+    # ax.set_xlabel('Time [sec]')
+    # ax.set_title('b_u')
+    # ax.legend()
     plt.show()
