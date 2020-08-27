@@ -38,11 +38,13 @@ def measured_rotation(l,q):
     q_accumulated[0][0] = np.array([1, 0, 0, 0], dtype=np.float64)
     q_accumulated[1][0] = np.array([1, 0, 0, 0], dtype=np.float64)
     rotated_links = np.zeros([len(q), len(q[0]), 3], dtype=np.float64)
+    link = np.zeros([len(q), len(q[0]), 3])
     for i in range(1, len(q[0])):
-        q_accumulated[0][i] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[0][i-1], q[0][i]))
-        q_accumulated[1][i] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[1][i-1], q[1][i]))
-        l[0] = kinematic.q_rotate(q[0][i], l[0])
-        l[1] = kinematic.q_rotate(q[1][i], l[1])
+        # q_accumulated[0][i] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[0][i-1], q[0][i]))
+        # q_accumulated[1][i] = kinematic.q_norm(kinematic.q_multiply(q_accumulated[1][i-1], q[1][i]))
+        link[0][i] = kinematic.q_rotate(q[0][i], l[0])
+        link[1][i] = kinematic.q_rotate(q[1][i], l[1])
         rotated_links[0][i] = l[0]
         rotated_links[1][i] = l[0]+l[1]
+
     return rotated_links
