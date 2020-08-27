@@ -41,3 +41,13 @@ import lib.Kinematics_with_Quaternions as kinematic
 # rotated1 = rotate(np.array([0.7071068, 0., 0., 0.7071068]),np.array([-0.1454, -0.1, 9.7963]))
 # rotated = kinematic.q_rotate(np.array([0., 0.7071068, 0., 0.7071068]),np.array([10.0, 0., 0]))
 # print rotated1
+
+acc_before = np.array([-0.3869345,   0.4769152,  -9.85718771])
+GRAVITY = np.array([9.84514154, 0.35159469, 0.25647701])
+print kinematic.v_magnitude(acc_before)-kinematic.v_magnitude(GRAVITY)
+quat = np.array([ 0.70055222, -0.1104565,   0.70499751, -0.00211289])
+print "q_mag", kinematic.q_norm(quat)
+
+
+acc_after = kinematic.q_rotate(kinematic.q_invert(quat), acc_before) - GRAVITY
+print kinematic.v_magnitude(acc_after)

@@ -90,6 +90,13 @@ def q_rotate(q, v):
     return v_rotated
 
 
+    def q_rotate2(q, v):
+        p = np.array([0, v[0], v[1], v[2]], dtype=np.float)
+        q_rotated = q_multiply(q, q_multiply(p, q_invert(q)))
+        print "rotated: "
+        sys.exit(q_rotated)
+
+
 def q_invert(q):
     '''
     Invert unit quaternion
