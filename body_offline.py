@@ -116,13 +116,6 @@ def get_filtered_data(file_name):
         acc_magnitude[i] = kinematic.v_magnitude(acc_filtered[1][i])-mag_gravity
         # if (i > 600) and (i < 650):
             # print "acc after", i, acc_filtered[1][i]
-    fig2, ax2 = plt.subplots()
-    index = np.arange(len(acc_magnitude))*0.01
-    ax2.plot(index, acc_magnitude, label="acc_mag")
-    ax2.set_xlim([0,len(acc_magnitude)*0.01])
-    ax2.set_xlabel('Time [sec]')
-    ax2.set_title('acc magnitude only filter')
-    ax2.legend()
 
     plot_subplot(acc_filtered[1], 'linear acc1 with gravity')
     offset = np.zeros([num_of_imu, 3], dtype=np.float)
@@ -131,9 +124,21 @@ def get_filtered_data(file_name):
     for i in range(0, num_of_imu):
         for j in range(0, num_of_data):
             acc_filtered[i][j] = acc_filtered[i][j]-offset[i]
-    print "acc_mag after 614", acc_magnitude[614]
+
+    for i in range(num_of_data):
+        acc_magnitude[i] = kinematic.v_magnitude(acc_filtered[1][i])
+    print "acc_mag after 614", acc_magnitude[614], kinematic.v_magnitude(acc_filtered[1][614])
     print "acc 614", acc_filtered[1][614]
     print "offset", offset[0], offset[1]
+    fig2, ax2 = plt.subplots()
+    index = np.arange(len(acc_magnitude))*0.01
+    ax2.plot(index, acc_magnitude, label="acc_mag")
+    ax2.set_xlim([0,len(acc_magnitude)*0.01])
+    ax2.set_xlabel('Time [sec]')
+    ax2.set_title('acc magnitude only filter')
+    ax2.legend()
+    plt.show()
+    sys.exit()
 
     # plot_subplot(acc_filtered[0], 'linear acc0')
     plot_subplot(acc_filtered[1], 'linear acc1 without')
@@ -211,4 +216,4 @@ if __name__ == '__main__':
     # ax.set_xlabel('Time [sec]')
     # ax.set_title('b_u')
     # ax.legend()
-    plt.show()
+    # plt.show()
