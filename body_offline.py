@@ -77,13 +77,13 @@ def get_filtered_data(file_name):
         acc_magnitude[i] = kinematic.v_magnitude(acc_filtered[1][i])-mag_gravity
     print "acc magnitude 600", acc_magnitude[600]
     print "acc 600", acc_filtered[1][600]
-    # fig, ax = plt.subplots()
-    # index = np.arange(len(acc_magnitude))*0.01
-    # ax.plot(index, acc_magnitude, label="acc_mag")
-    # ax.set_xlim([0,len(acc_magnitude)*0.01])
-    # ax.set_xlabel('Time [sec]')
-    # ax.set_title('acc_mag')
-    # ax.legend()
+    fig, ax = plt.subplots()
+    index = np.arange(len(acc_magnitude))*0.01
+    ax.plot(index, acc_magnitude, label="acc_mag")
+    ax.set_xlim([0,len(acc_magnitude)*0.01])
+    ax.set_xlabel('Time [sec]')
+    ax.set_title('acc magnitude only filter')
+    ax.legend()
 
     for i in range(1, num_of_data):
         # if (i < 20):
@@ -102,6 +102,9 @@ def get_filtered_data(file_name):
     # measurement_diff = rotated_measurement[1]-rotated_measurement[0]
     # measurement_diff[0] = link_1
 
+# theta1	theta2	theta3	theta4
+# 0.0065999846	0.0093499781	0.0140249672	0.0124666375
+
     for i in range(1, num_of_data):
         # if (i > 600) and (i < 650):
             # print "acc before", i, acc_filtered[1][i]
@@ -110,8 +113,16 @@ def get_filtered_data(file_name):
         acc_filtered[0][i] = acc_filtered[0][i]
         acc_filtered[1][i] = kinematic.q_rotate(kinematic.q_invert(quat[1][i]),acc_filtered[1][i])
         acc_filtered[1][i] = acc_filtered[1][i]
+        acc_magnitude[i] = kinematic.v_magnitude(acc_filtered[1][i])-mag_gravity
         # if (i > 600) and (i < 650):
             # print "acc after", i, acc_filtered[1][i]
+    fig2, ax2 = plt.subplots()
+    index = np.arange(len(acc_magnitude))*0.01
+    ax2.plot(index, acc_magnitude, label="acc_mag")
+    ax2.set_xlim([0,len(acc_magnitude)*0.01])
+    ax2.set_xlabel('Time [sec]')
+    ax2.set_title('acc magnitude only filter')
+    ax2.legend()
 
     plot_subplot(acc_filtered[1], 'linear acc1 with gravity')
     offset = np.zeros([num_of_imu, 3], dtype=np.float)
@@ -125,7 +136,7 @@ def get_filtered_data(file_name):
     print "offset", offset[0], offset[1]
 
     # plot_subplot(acc_filtered[0], 'linear acc0')
-    plot_subplot(acc_filtered[1], 'linear acc1')
+    plot_subplot(acc_filtered[1], 'linear acc1 without')
 
     # ax.plot(index, quat[1], label="quaternion-1")
     # ax.set_xlim([0,len(quat[1])*0.01])
