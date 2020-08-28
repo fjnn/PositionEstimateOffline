@@ -69,14 +69,16 @@ def get_filtered_data(file_name):
     plot_subplot(acc_filtered[1], 'filtered data')
 
     GRAVITY = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)],axis=0)  # 26=win_size/2 + 1
-    print "GRAVITY:", GRAVITY
     mag_gravity = kinematic.v_magnitude(GRAVITY)
+    print "GRAVITY:", GRAVITY, mag_gravity
 
-    # acc_magnitude = np.zeros(num_of_data)
-    # for i in range(num_of_data):
-    #     acc_magnitude[i] = kinematic.v_magnitude(acc_filtered[1][i])-mag_gravity
-    # fig, ax=plt.subplots()
-    # index=np.arange(len(acc_magnitude))*0.01
+    acc_magnitude = np.zeros(num_of_data)
+    for i in range(num_of_data):
+        acc_magnitude[i] = kinematic.v_magnitude(acc_filtered[1][i])-mag_gravity
+    print "acc magnitude 600", acc_magnitude[600]
+    print "acc 600", acc_filtered[1][600]
+    # fig, ax = plt.subplots()
+    # index = np.arange(len(acc_magnitude))*0.01
     # ax.plot(index, acc_magnitude, label="acc_mag")
     # ax.set_xlim([0,len(acc_magnitude)*0.01])
     # ax.set_xlabel('Time [sec]')
@@ -92,48 +94,44 @@ def get_filtered_data(file_name):
         #     print "quat after", i, quat[1][i]
     # TODO: SLERP or filtering may be required
 
-    link_0 = np.array([0.34, 0, 0], dtype=np.float32)
-    link_1 = np.array([0.12, 0, 0], dtype=np.float32)
+    link_0 = np.array([260, 0, 0], dtype=np.float32)
+    link_1 = np.array([140, 0, 0], dtype=np.float32)
     body_link = np.array([link_0, link_1])
-    rotated_measurement = measured_rotation(body_link,quat)
-    measurement_diff = rotated_measurement[1]-rotated_measurement[0]
-    measurement_diff[0] = link_1
+    measurement_diff = measurement[1] - measurement[0] + np.array([0, 0, 140])
+    # rotated_measurement = measured_rotation(body_link,quat)
+    # measurement_diff = rotated_measurement[1]-rotated_measurement[0]
+    # measurement_diff[0] = link_1
 
     for i in range(1, num_of_data):
-        if (i > 600) and (i < 650):
-            print "acc before", i, acc_filtered[1][i]
-            print "quat used", i, quat[1][i]
+        # if (i > 600) and (i < 650):
+            # print "acc before", i, acc_filtered[1][i]
+            # print "quat used", i, quat[1][i]
         acc_filtered[0][i] = kinematic.q_rotate(kinematic.q_invert(quat[0][i]),acc_filtered[0][i])
         acc_filtered[0][i] = acc_filtered[0][i]
         acc_filtered[1][i] = kinematic.q_rotate(kinematic.q_invert(quat[1][i]),acc_filtered[1][i])
         acc_filtered[1][i] = acc_filtered[1][i]
-        if (i > 600) and (i < 650):
-            print "acc after", i, acc_filtered[1][i]
+        # if (i > 600) and (i < 650):
+            # print "acc after", i, acc_filtered[1][i]
 
+    plot_subplot(acc_filtered[1], 'linear acc1 with gravity')
     offset = np.zeros([num_of_imu, 3], dtype=np.float)
     offset[0] = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
     offset[1] = np.average(acc_filtered[1][(win_size/2 +1):(win_size+1)], axis=0)
     for i in range(0, num_of_imu):
         for j in range(0, num_of_data):
             acc_filtered[i][j] = acc_filtered[i][j]-offset[i]
-            # SOLVE IT LATER!!!!!
-            # if i == 1:
-            #     acc_filtered[i][j][1] = 0.0
-            #     acc_filtered[i][j][0] = 0.0
+    print "acc_mag after 614", acc_magnitude[614]
+    print "acc 614", acc_filtered[1][614]
     print "offset", offset[0], offset[1]
 
     # plot_subplot(acc_filtered[0], 'linear acc0')
     plot_subplot(acc_filtered[1], 'linear acc1')
 
-    fig, ax=plt.subplots()
-    index=np.arange(len(quat[1]))*0.01
-    ax.plot(index, quat[1], label="quaternion-1")
-    ax.set_xlim([0,len(quat[1])*0.01])
-    ax.set_xlabel('Time [sec]')
-    ax.set_title('Quaternion 1')
-    ax.legend()
-    plt.show()
-    sys.exit()
+    # ax.plot(index, quat[1], label="quaternion-1")
+    # ax.set_xlim([0,len(quat[1])*0.01])
+    # ax.set_xlabel('Time [sec]')
+    # ax.set_title('Quaternion 1')
+    # ax.legend()
 
     return acc, quat, acc_filtered, measurement_diff
 
@@ -157,17 +155,18 @@ if __name__ == '__main__':
     # plot_subplot(input_filtered[:,:3], 'b_u IMU0 part filtered')
     # plt.show()
 
-    stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]
+    # stateMatrix = np.zeros((6, 1), dtype=np.float64)  # [p0 (3x1), p1 (3x1)]
+    stateMatrix = np.array([0, 0, 260, 0, 0, 400], dtype=np.float64).reshape(6,1)  # [p0 (3x1), p1 (3x1)]
     estimateCovariance = np.eye(stateMatrix.shape[0])
     # transitionMatrix = np.eye(stateMatrix.shape[0], dtype=np.float32)
     transitionMatrix = np.array([[1,0,0,0,0,0],[0, 1, 0, 0, 0, 0],[0, 0, 1, 0, 0, 0],[0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1]], dtype=np.float32)
-    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 0.01
+    processNoiseCov = np.eye(stateMatrix.shape[0], dtype=np.float32) * 0.0001
     # processNoiseCov = np.array([[1000,0,0,0,0,0],[0, 1000, 0, 0, 0, 0],[0, 0, 1000, 0, 0, 0],[0, 0, 0, 0.001, 0, 0], [0, 0, 0, 0, 0.001, 0], [0, 0, 0, 0, 0, 0.001]], dtype=np.float32) * 1000
     # processNoiseCov = np.array([[0.001,0,0,0,0,0],[0, 0.001, 0, 0, 0, 0],[0, 0, 0.001, 0, 0, 0],[0, 0, 0, 1000, 0, 0], [0, 0, 0, 0, 1000, 0], [0, 0, 0, 0, 0, 1000]], dtype=np.float32) * 1000
     measurementStateMatrix = np.zeros((3, 1), dtype=np.float64)
     observationMatrix = np.array([[-1,0,0,1,0,0],[0,-1,0,0,1,0],[0,0,-1,0,0,1]], dtype=np.float32)
     # observationMatrix = np.array([[-1,0,0,1,0,0],[0,-1,0,0,1,0],[0,0,-1,0,0,1]], dtype=np.float32)
-    measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 0.01
+    measurementNoiseCov = np.array([[1,0,0],[0,1,0],[0,0,1]], dtype=np.float32) * 0.1
     kalman = KalmanFilter(X=stateMatrix,
                           P=estimateCovariance,
                           F=transitionMatrix,
