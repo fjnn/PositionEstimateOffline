@@ -97,7 +97,7 @@ def get_filtered_data(file_name):
     link_0 = np.array([260, 0, 0], dtype=np.float32)
     link_1 = np.array([140, 0, 0], dtype=np.float32)
     body_link = np.array([link_0, link_1])
-    measurement_diff = measurement[1] - measurement[0] + np.array([0, 0, 140])
+    measurement_diff = measurement[1] - measurement[0]
     # rotated_measurement = measured_rotation(body_link,quat)
     # measurement_diff = rotated_measurement[1]-rotated_measurement[0]
     # measurement_diff[0] = link_1
