@@ -9,6 +9,8 @@
     q_SG: sensor to global orientation, depend on the previous joint. not updated by Kalman. Input
     q_BG: body to global orientation, the target.
 
+    Here is the problem: q_SB. It is not supposed to be constant. Actually this is why I have a problem on y axis (Remember the gravity effect of y-axis). Therefore, I need to apply a dynamic calibration step. This calibration will give me the q_SB. This q_SB will rotate from body to sensor (or vice versa). So from q_init*q_SB
+
 '''
 
 import numpy as np
@@ -104,6 +106,7 @@ def get_filtered_data(file_name):
 
 # theta1	theta2	theta3	theta4
 # 0.0065999846	0.0093499781	0.0140249672	0.0124666375
+    print "acc 614 not-rotated", acc_filtered[1][614]
 
     for i in range(1, num_of_data):
         # if (i > 600) and (i < 650):
@@ -116,7 +119,8 @@ def get_filtered_data(file_name):
         acc_magnitude[i] = kinematic.v_magnitude(acc_filtered[1][i])-mag_gravity
         # if (i > 600) and (i < 650):
             # print "acc after", i, acc_filtered[1][i]
-
+    print "acc 614 rotated", acc_filtered[1][614]
+    print "acc mag test 614", acc_magnitude[614], kinematic.v_magnitude(acc_filtered[1][614])
     plot_subplot(acc_filtered[1], 'linear acc1 with gravity')
     offset = np.zeros([num_of_imu, 3], dtype=np.float)
     offset[0] = np.average(acc_filtered[0][(win_size/2 +1):(win_size+1)], axis=0)
@@ -128,6 +132,7 @@ def get_filtered_data(file_name):
     for i in range(num_of_data):
         acc_magnitude[i] = kinematic.v_magnitude(acc_filtered[1][i])
     print "acc_mag after 614", acc_magnitude[614], kinematic.v_magnitude(acc_filtered[1][614])
+    print "quat 614", quat[1][614]
     print "acc 614", acc_filtered[1][614]
     print "offset", offset[0], offset[1]
     fig2, ax2 = plt.subplots()
@@ -137,11 +142,12 @@ def get_filtered_data(file_name):
     ax2.set_xlabel('Time [sec]')
     ax2.set_title('acc magnitude only filter')
     ax2.legend()
-    plt.show()
-    sys.exit()
+
 
     # plot_subplot(acc_filtered[0], 'linear acc0')
-    plot_subplot(acc_filtered[1], 'linear acc1 without')
+    plot_subplot(acc_filtered[1], 'linear acc1 without GRAVITY')
+    plt.show()
+    sys.exit()
 
     # ax.plot(index, quat[1], label="quaternion-1")
     # ax.set_xlim([0,len(quat[1])*0.01])
